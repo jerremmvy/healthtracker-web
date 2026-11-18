@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jawline & Fat Loss Daily Tracker</title>
+    <title>SculptLog — Daily Discipline &amp; Lean Cut OS</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts: Inter -->
@@ -17,18 +17,6 @@
                 extend: {
                     fontFamily: {
                         sans: ['Inter', 'sans-serif'],
-                    },
-                    colors: {
-                        charcoal: {
-                            bg: '#1E1E1E',
-                            card: '#252526',
-                            hover: '#2D2D30',
-                            border: '#363638',
-                        },
-                        accent: {
-                            emerald: '#10B981',
-                            cyan: '#06B6D4',
-                        }
                     }
                 }
             }
@@ -41,7 +29,6 @@
             font-family: 'Inter', sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
-        /* Custom sleek scrollbar */
         ::-webkit-scrollbar {
             width: 6px;
             height: 6px;
@@ -56,1069 +43,1295 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #4B5563;
         }
-        /* Smooth transitions */
         .progress-fill {
-            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .checkbox-pop {
-            transition: transform 0.15s ease-out, background-color 0.2s ease, border-color 0.2s ease;
+        .status-btn {
+            transition: all 0.15s ease;
         }
-        .checkbox-pop:active {
-            transform: scale(0.92);
+        .status-btn:active {
+            transform: scale(0.94);
         }
     </style>
 </head>
-<body class="min-h-screen bg-[#1E1E1E] text-gray-100 antialiased selection:bg-emerald-500/30 selection:text-emerald-200 pb-12">
+<body class="min-h-screen bg-[#1E1E1E] text-gray-100 antialiased selection:bg-emerald-500/30 selection:text-emerald-200 pb-14">
 
-    <!-- Toast Notification Container (Replaces alert()) -->
+    <!-- Toast Notification Container -->
     <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
-    <!-- Custom Confirmation Modal (Replaces confirm()) -->
-    <div id="confirm-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-        <div class="bg-[#252526] border border-[#363638] rounded-2xl max-w-sm w-full p-6 shadow-2xl transform transition-all">
-            <h3 id="modal-title" class="text-lg font-semibold text-white mb-2">Reset Daily Progress?</h3>
-            <p id="modal-desc" class="text-sm text-gray-400 mb-6">This will clear today's checked rules, logged meals, water intake, and step count. Your streak and visual check-in history will remain saved.</p>
+    <!-- Custom Confirmation Modal -->
+    <div id="confirm-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-sm p-4">
+        <div class="bg-[#252526] border border-[#363638] rounded-2xl max-w-sm w-full p-6 shadow-2xl">
+            <h3 class="text-lg font-semibold text-white mb-2">Clear This Date's Log?</h3>
+            <p id="confirm-modal-desc" class="text-sm text-gray-400 mb-6">This will reset all rule statuses, meals, water, steps, and notes for the selected date.</p>
             <div class="flex justify-end gap-3">
-                <button id="modal-cancel" class="px-4 py-2 rounded-xl text-sm font-medium text-gray-300 bg-[#2D2D30] hover:bg-[#38383C] transition">Cancel</button>
-                <button id="modal-confirm" class="px-4 py-2 rounded-xl text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-500 transition shadow-lg shadow-emerald-900/20">Reset Day</button>
+                <button type="button" id="modal-cancel" class="px-4 py-2 rounded-xl text-sm font-medium text-gray-300 bg-[#2D2D30] hover:bg-[#38383C] transition">Cancel</button>
+                <button type="button" id="modal-confirm" class="px-4 py-2 rounded-xl text-sm font-medium text-white bg-rose-600 hover:bg-rose-500 transition">Clear Date</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customize Rules Modal -->
+    <div id="rules-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-sm p-4">
+        <div class="bg-[#252526] border border-[#363638] rounded-2xl max-w-md w-full p-6 shadow-2xl">
+            <div class="flex items-center justify-between mb-3">
+                <h3 class="text-lg font-semibold text-white">Customize Daily Rules</h3>
+                <button type="button" id="rules-modal-close" class="text-gray-400 hover:text-white p-1 rounded-lg">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <p class="text-xs text-gray-400 mb-3">Add your own personal daily non-negotiables or remove rules you don't need.</p>
+            <form id="add-rule-form" class="space-y-2 mb-4 bg-[#1E1E1E] p-3 rounded-xl border border-[#363638]">
+                <input type="text" id="new-rule-title" placeholder="Rule title (e.g., No eating after 9 PM)" required class="w-full bg-[#252526] border border-[#363638] focus:border-cyan-500 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none">
+                <div class="flex gap-2">
+                    <input type="text" id="new-rule-desc" placeholder="Short reason (e.g., Prevents morning bloat)" class="flex-1 bg-[#252526] border border-[#363638] focus:border-cyan-500 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none">
+                    <button type="submit" class="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition shrink-0">+ Add</button>
+                </div>
+            </form>
+            <div id="custom-rules-list" class="space-y-2 max-h-60 overflow-y-auto pr-1">
+                <!-- Rendered via JS -->
             </div>
         </div>
     </div>
 
     <!-- Backup / Restore Modal -->
-    <div id="backup-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-        <div class="bg-[#252526] border border-[#363638] rounded-2xl max-w-md w-full p-6 shadow-2xl transform transition-all">
+    <div id="backup-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-sm p-4">
+        <div class="bg-[#252526] border border-[#363638] rounded-2xl max-w-md w-full p-6 shadow-2xl">
             <div class="flex items-center justify-between mb-2">
                 <h3 class="text-lg font-semibold text-white flex items-center gap-2">
                     <svg class="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
                     </svg>
-                    Export / Restore Progress
+                    Export / Restore Calendar Data
                 </h3>
-                <button id="backup-modal-close" class="text-gray-400 hover:text-white p-1 rounded-lg">
+                <button type="button" id="backup-modal-close" class="text-gray-400 hover:text-white p-1 rounded-lg">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
             </div>
             <p class="text-xs text-gray-400 mb-4 leading-relaxed">
-                Your data is stored privately on this device. Copy or download your backup code to transfer progress to another phone/browser, or paste a backup code below to restore.
+                All your calendar logs are saved privately in your browser. Copy or download your backup JSON anytime to move or safeguard your history.
             </p>
-            
             <div class="flex gap-2 mb-3">
                 <button type="button" id="btn-copy-backup" class="flex-1 py-2 px-3 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-semibold transition flex items-center justify-center gap-1.5">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
                     Copy Backup JSON
                 </button>
                 <button type="button" id="btn-download-backup" class="flex-1 py-2 px-3 rounded-xl bg-[#1E1E1E] hover:bg-[#2D2D30] border border-[#363638] text-gray-200 text-xs font-semibold transition flex items-center justify-center gap-1.5">
-                    <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                    Download File
+                    Download .JSON
                 </button>
             </div>
-
-            <label class="block text-[11px] uppercase tracking-wider text-gray-400 font-medium mb-1.5">Backup Data (JSON)</label>
             <textarea id="backup-json-area" rows="4" placeholder="Paste backup JSON here to restore..." class="w-full bg-[#1E1E1E] border border-[#363638] focus:border-emerald-500 rounded-xl p-3 text-xs font-mono text-gray-300 placeholder-gray-600 focus:outline-none mb-4"></textarea>
-
-            <div class="flex justify-end gap-2">
-                <button type="button" id="btn-restore-backup" class="w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition">
-                    Restore From Pasted JSON
-                </button>
-            </div>
+            <button type="button" id="btn-restore-backup" class="w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition">
+                Restore From Pasted JSON
+            </button>
         </div>
     </div>
 
-    <!-- Main Container -->
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 pt-6 sm:pt-8">
-        
-        <!-- 1. HEADER & TARGETS BANNER -->
-        <header class="bg-[#252526] border border-[#363638] rounded-2xl p-5 sm:p-6 mb-6 shadow-lg">
-            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
-                <div>
-                    <div class="flex items-center gap-2.5 mb-1.5">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/20">
-                            CUT PROTOCOL
-                        </span>
-                        <span id="current-date-display" class="text-xs text-gray-400 font-medium"></span>
+    <!-- Main App Container -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 pt-5 sm:pt-7">
+
+        <!-- TOP NAVIGATION BAR -->
+        <header class="bg-[#252526] border border-[#363638] rounded-2xl p-4 sm:p-5 mb-6 shadow-lg">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                <div class="flex items-center gap-3.5">
+                    <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-cyan-500/20 to-emerald-500/20 border border-cyan-500/30 flex items-center justify-center shrink-0">
+                        <svg class="w-6 h-6 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
                     </div>
-                    <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-white">
-                        Jawline & Fat Loss Tracker
-                    </h1>
-                    <p class="text-sm text-gray-400 mt-1">
-                        Consistent calorie deficit + zero facial water retention.
-                    </p>
+                    <div>
+                        <div class="flex items-center gap-2 mb-0.5">
+                            <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-white">SculptLog</h1>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold tracking-wider uppercase bg-cyan-500/15 text-cyan-300 border border-cyan-500/25">
+                                77 KG LEAN CUT OS
+                            </span>
+                        </div>
+                        <p class="text-xs text-gray-400">Daily discipline, de-bloating &amp; visual definition log</p>
+                    </div>
                 </div>
 
-                <!-- Target Badges & Streak/Reset Actions -->
-                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-                    <!-- Targets Pill Box -->
-                    <div class="grid grid-cols-3 gap-2 sm:gap-3 bg-[#1E1E1E] border border-[#363638] rounded-xl p-3">
-                        <div class="px-2">
-                            <span class="block text-[11px] uppercase tracking-wider text-gray-400 font-medium">Calories</span>
-                            <span class="text-sm sm:text-base font-bold text-cyan-400">1,900–2,000</span>
-                        </div>
-                        <div class="px-2 border-l border-[#363638]">
-                            <span class="block text-[11px] uppercase tracking-wider text-gray-400 font-medium">Protein</span>
-                            <span class="text-sm sm:text-base font-bold text-emerald-400">135–160g</span>
-                        </div>
-                        <div class="px-2 border-l border-[#363638]">
-                            <span class="block text-[11px] uppercase tracking-wider text-gray-400 font-medium">Start Baseline</span>
-                            <span class="text-sm sm:text-base font-bold text-gray-200">75.0 kg</span>
+                <!-- Target Reference + Quick Actions -->
+                <div class="flex flex-wrap items-center gap-2">
+                    <div class="flex items-center gap-3 bg-[#1E1E1E] border border-[#363638] rounded-xl px-3.5 py-2 text-xs">
+                        <div>
+                            <span class="text-gray-400 block text-[10px] uppercase">Daily Targets</span>
+                            <span class="font-semibold text-cyan-400">2,000 kcal</span> · <span class="font-semibold text-emerald-400">150g P</span> · <span class="font-semibold text-gray-200">2.85L H₂O</span>
                         </div>
                     </div>
 
-                    <!-- Streak, Backup & Reset Controls -->
-                    <div class="flex items-center justify-between sm:justify-end gap-2">
-                        <div class="flex items-center gap-2 bg-[#1E1E1E] border border-[#363638] rounded-xl px-3.5 py-2.5" title="Consecutive days completing 6+ of 8 rules">
-                            <svg class="w-5 h-5 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clip-rule="evenodd" />
-                            </svg>
-                            <div>
-                                <div class="text-xs text-gray-400 leading-none">Streak</div>
-                                <div class="text-sm font-bold text-white leading-tight mt-0.5"><span id="streak-count">0</span> Days</div>
-                            </div>
+                    <div class="flex items-center gap-2 bg-[#1E1E1E] border border-[#363638] rounded-xl px-3.5 py-2">
+                        <svg class="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03z" clip-rule="evenodd" />
+                        </svg>
+                        <div class="text-xs">
+                            <span class="text-gray-400 block text-[10px] uppercase leading-none">Streak</span>
+                            <span class="font-bold text-white"><span id="streak-count">0</span> Days</span>
                         </div>
-
-                        <button id="btn-open-backup" class="p-3 rounded-xl bg-[#1E1E1E] hover:bg-[#2D2D30] border border-[#363638] text-gray-300 hover:text-cyan-400 transition flex items-center gap-1.5 text-sm font-medium" title="Backup or Restore Progress">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
-                            </svg>
-                            <span class="hidden sm:inline">Backup</span>
-                        </button>
-
-                        <button id="btn-reset-day" class="p-3 rounded-xl bg-[#1E1E1E] hover:bg-[#2D2D30] border border-[#363638] text-gray-300 hover:text-white transition flex items-center gap-1.5 text-sm font-medium" title="Reset Today's Checklist & Logs">
-                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                            </svg>
-                            <span class="hidden sm:inline">Reset Day</span>
-                        </button>
                     </div>
+
+                    <button type="button" id="btn-jump-today" class="px-3.5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition shadow-sm">
+                        Log Today
+                    </button>
+
+                    <button type="button" id="btn-open-rules-modal" class="px-3 py-2.5 rounded-xl bg-[#1E1E1E] hover:bg-[#2D2D30] border border-[#363638] text-gray-300 hover:text-white text-xs font-medium transition flex items-center gap-1.5" title="Add or edit rules">
+                        <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
+                        Rules
+                    </button>
+
+                    <button type="button" id="btn-open-backup" class="px-3 py-2.5 rounded-xl bg-[#1E1E1E] hover:bg-[#2D2D30] border border-[#363638] text-gray-300 hover:text-cyan-400 text-xs font-medium transition flex items-center gap-1.5">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" /></svg>
+                        Backup
+                    </button>
                 </div>
             </div>
         </header>
 
-        <!-- MAIN GRID LAYOUT -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- MAIN WORKSPACE: FULL-WIDTH CALENDAR VIEW -->
+        <div class="max-w-4xl mx-auto space-y-6">
+            <section class="bg-[#252526] border border-[#363638] rounded-2xl p-5 sm:p-6 shadow-lg">
+                <!-- Month Navigation Header -->
+                <div class="flex items-center justify-between mb-5">
+                    <button type="button" id="btn-prev-month" class="p-2.5 rounded-xl bg-[#1E1E1E] hover:bg-[#2D2D30] border border-[#363638] text-gray-300 hover:text-white transition" title="Previous Month">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                    </button>
+                    <div class="text-center">
+                        <div class="flex items-center justify-center gap-2">
+                            <h2 id="calendar-month-year" class="text-lg sm:text-xl font-bold text-white">November 2026</h2>
+                            <button type="button" id="btn-current-month" class="text-[11px] px-2 py-0.5 rounded-md bg-[#1E1E1E] hover:bg-[#2D2D30] border border-[#363638] text-cyan-400 transition">Today</button>
+                        </div>
+                        <p id="month-summary-text" class="text-xs text-gray-400 mt-0.5">Click any date below to open &amp; log that day</p>
+                    </div>
+                    <button type="button" id="btn-next-month" class="p-2.5 rounded-xl bg-[#1E1E1E] hover:bg-[#2D2D30] border border-[#363638] text-gray-300 hover:text-white transition" title="Next Month">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    </button>
+                </div>
 
-            <!-- LEFT COLUMN: DAILY CHECKLIST & HYDRATION/STEPS (7 cols on lg) -->
-            <div class="lg:col-span-7 space-y-6">
+                <!-- Weekday Headers -->
+                <div class="grid grid-cols-7 gap-2 text-center text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2.5">
+                    <div>Sun</div>
+                    <div>Mon</div>
+                    <div>Tue</div>
+                    <div>Wed</div>
+                    <div>Thu</div>
+                    <div>Fri</div>
+                    <div>Sat</div>
+                </div>
+
+                <!-- Calendar Days Grid -->
+                <div id="calendar-grid" class="grid grid-cols-7 gap-2">
+                    <!-- Rendered via JS -->
+                </div>
+
+                <!-- Calendar Legend -->
+                <div class="mt-5 pt-4 border-t border-[#363638] flex flex-wrap items-center justify-between gap-3 text-xs text-gray-400">
+                    <div class="flex flex-wrap items-center gap-4">
+                        <div class="flex items-center gap-1.5">
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                            <span>On Track (6–8/8)</span>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+                            <span>Partial (3–5/8)</span>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+                            <span>Off Track / Missed</span>
+                        </div>
+                    </div>
+                    <span class="text-cyan-400 font-medium">Tap any day to log</span>
+                </div>
+            </section>
+
+            <!-- Monthly Adherence & Visual Progress Summary Card -->
+            <section class="bg-[#252526] border border-[#363638] rounded-2xl p-5 sm:p-6 shadow-lg">
+                <h3 class="text-sm font-bold text-white mb-3.5 flex items-center gap-2">
+                    <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                    Monthly Overview
+                </h3>
+                <div class="grid grid-cols-3 gap-3 text-center">
+                    <div class="bg-[#1E1E1E] border border-[#363638] rounded-xl p-3.5">
+                        <span class="block text-xs text-gray-400">Winning Days</span>
+                        <span id="stat-winning-days" class="text-xl font-bold text-emerald-400 mt-1 block">0</span>
+                    </div>
+                    <div class="bg-[#1E1E1E] border border-[#363638] rounded-xl p-3.5">
+                        <span class="block text-xs text-gray-400">Rules Missed</span>
+                        <span id="stat-missed-rules" class="text-xl font-bold text-rose-400 mt-1 block">0</span>
+                    </div>
+                    <div class="bg-[#1E1E1E] border border-[#363638] rounded-xl p-3.5">
+                        <span class="block text-xs text-gray-400">Avg Sharpness</span>
+                        <span id="stat-avg-sharpness" class="text-xl font-bold text-cyan-400 mt-1 block">—</span>
+                    </div>
+                </div>
+                <p class="text-xs text-gray-400 mt-3.5 leading-relaxed">
+                    <strong class="text-cyan-400">2-Week Rule:</strong> Click any date on the calendar to log or review your habits. If jawline sharpness &amp; clothing fit haven't improved after 14 solid days, lower daily carbs/fats by <strong>150 kcal</strong>.
+                </p>
+            </section>
+        </div>
+
+        <!-- DAY INSPECTOR & LOGGING MODAL (APPEARS ONLY WHEN A DAY IS CLICKED) -->
+        <div id="day-modal" class="fixed inset-0 z-40 hidden items-start sm:items-center justify-center bg-black/80 backdrop-blur-sm p-2 sm:p-4 overflow-y-auto">
+            <div class="bg-[#1E1E1E] border border-[#363638] rounded-2xl max-w-3xl w-full my-4 sm:my-8 shadow-2xl overflow-hidden">
                 
-                <!-- 2. INTERACTIVE DAILY CHECKLIST CARD -->
-                <section class="bg-[#252526] border border-[#363638] rounded-2xl p-5 sm:p-6 shadow-lg">
-                    <div class="flex items-center justify-between mb-3">
-                        <div>
-                            <h2 class="text-lg font-bold text-white flex items-center gap-2">
-                                <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                Daily Cut & Jawline Rules
-                            </h2>
-                            <p class="text-xs text-gray-400 mt-0.5">Complete all rules daily to drop fat & facial puffiness</p>
+                <!-- Modal Sticky Header -->
+                <div class="bg-[#252526] px-5 py-4 border-b border-[#363638] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span id="selected-date-badge" class="px-2 py-0.5 rounded-md text-[11px] font-bold bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">TODAY</span>
+                            <span id="selected-date-iso" class="text-xs font-mono text-gray-400">2026-11-19</span>
                         </div>
-                        <div class="text-right">
-                            <span id="completion-percentage" class="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">0%</span>
-                            <span id="completion-fraction" class="block text-xs text-gray-400">0/8 Done</span>
-                        </div>
-                    </div>
-
-                    <!-- Overall Progress Bar -->
-                    <div class="w-full h-2.5 bg-[#1E1E1E] rounded-full overflow-hidden mb-6 border border-[#363638]">
-                        <div id="checklist-progress-bar" class="h-full bg-gradient-to-r from-emerald-500 to-cyan-400 progress-fill rounded-full" style="width: 0%"></div>
-                    </div>
-
-                    <!-- Rules List -->
-                    <div class="space-y-3" id="rules-list">
-                        
-                        <!-- Rule 1: Protein -->
-                        <div data-rule="protein" class="rule-item group flex items-start gap-3.5 p-3.5 rounded-xl bg-[#1E1E1E] border border-[#363638] hover:border-gray-600 transition cursor-pointer select-none">
-                            <button type="button" class="rule-checkbox checkbox-pop mt-0.5 w-6 h-6 rounded-lg border-2 border-gray-500 flex items-center justify-center shrink-0 focus:outline-none">
-                                <svg class="w-3.5 h-3.5 text-[#1E1E1E] font-bold hidden check-icon" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                            </button>
-                            <div class="flex-1 min-w-0">
-                                <div class="flex items-center justify-between gap-2">
-                                    <span class="rule-title text-sm sm:text-base font-medium text-gray-100">Hit 135g–160g Protein Target</span>
-                                    <span id="badge-protein-status" class="text-[11px] font-medium px-2 py-0.5 rounded-md bg-[#252526] text-gray-400 border border-[#363638]">0g / 145g</span>
-                                </div>
-                                <p class="text-xs text-gray-400 mt-0.5">Protects lean muscle & keeps hunger low during deficit.</p>
-                            </div>
-                        </div>
-
-                        <!-- Rule 2: Calories -->
-                        <div data-rule="calories" class="rule-item group flex items-start gap-3.5 p-3.5 rounded-xl bg-[#1E1E1E] border border-[#363638] hover:border-gray-600 transition cursor-pointer select-none">
-                            <button type="button" class="rule-checkbox checkbox-pop mt-0.5 w-6 h-6 rounded-lg border-2 border-gray-500 flex items-center justify-center shrink-0 focus:outline-none">
-                                <svg class="w-3.5 h-3.5 text-[#1E1E1E] font-bold hidden check-icon" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                            </button>
-                            <div class="flex-1 min-w-0">
-                                <div class="flex items-center justify-between gap-2">
-                                    <span class="rule-title text-sm sm:text-base font-medium text-gray-100">Stay within 1,900–2,000 kcal</span>
-                                    <span id="badge-calorie-status" class="text-[11px] font-medium px-2 py-0.5 rounded-md bg-[#252526] text-gray-400 border border-[#363638]">0 / 1,950 kcal</span>
-                                </div>
-                                <p class="text-xs text-gray-400 mt-0.5">~450 kcal deficit for steady 0.4–0.5 kg/week fat loss.</p>
-                            </div>
-                        </div>
-
-                        <!-- Rule 3: Zero Liquid Calories -->
-                        <div data-rule="liquidCalories" class="rule-item group flex items-start gap-3.5 p-3.5 rounded-xl bg-[#1E1E1E] border border-[#363638] hover:border-gray-600 transition cursor-pointer select-none">
-                            <button type="button" class="rule-checkbox checkbox-pop mt-0.5 w-6 h-6 rounded-lg border-2 border-gray-500 flex items-center justify-center shrink-0 focus:outline-none">
-                                <svg class="w-3.5 h-3.5 text-[#1E1E1E] font-bold hidden check-icon" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                            </button>
-                            <div class="flex-1 min-w-0">
-                                <span class="rule-title text-sm sm:text-base font-medium text-gray-100 block">Zero Liquid Calories</span>
-                                <p class="text-xs text-gray-400 mt-0.5">Water, black coffee, or unsweetened tea only. No sugary drinks or alcohol.</p>
-                            </div>
-                        </div>
-
-                        <!-- Rule 4: Low Sodium & Clean Sauces -->
-                        <div data-rule="lowSodium" class="rule-item group flex items-start gap-3.5 p-3.5 rounded-xl bg-[#1E1E1E] border border-[#363638] hover:border-gray-600 transition cursor-pointer select-none">
-                            <button type="button" class="rule-checkbox checkbox-pop mt-0.5 w-6 h-6 rounded-lg border-2 border-gray-500 flex items-center justify-center shrink-0 focus:outline-none">
-                                <svg class="w-3.5 h-3.5 text-[#1E1E1E] font-bold hidden check-icon" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                            </button>
-                            <div class="flex-1 min-w-0">
-                                <span class="rule-title text-sm sm:text-base font-medium text-gray-100 block">Low Sodium & Clean Sauces</span>
-                                <p class="text-xs text-gray-400 mt-0.5">No fast food, heavy gravies, or excess soy/teriyaki sauce (prevents cheek puffiness).</p>
-                            </div>
-                        </div>
-
-                        <!-- Rule 5: Drink 2.5L–3L Water (With Interactive Counter) -->
-                        <div data-rule="water" class="rule-item p-3.5 rounded-xl bg-[#1E1E1E] border border-[#363638] hover:border-gray-600 transition">
-                            <div class="flex items-start gap-3.5 cursor-pointer select-none" id="water-rule-header">
-                                <button type="button" class="rule-checkbox checkbox-pop mt-0.5 w-6 h-6 rounded-lg border-2 border-gray-500 flex items-center justify-center shrink-0 focus:outline-none">
-                                    <svg class="w-3.5 h-3.5 text-[#1E1E1E] font-bold hidden check-icon" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                                </button>
-                                <div class="flex-1 min-w-0">
-                                    <div class="flex items-center justify-between">
-                                        <span class="rule-title text-sm sm:text-base font-medium text-gray-100">Drink 2.5L–3.0L Water</span>
-                                        <span class="text-xs font-bold text-cyan-400"><span id="water-current-text">0.00</span>L / 2.75L</span>
-                                    </div>
-                                    <p class="text-xs text-gray-400 mt-0.5">Flushes excess sodium to sharpen jawline definition.</p>
-                                </div>
-                            </div>
-                            <!-- Interactive Water Bar & Quick Add Buttons -->
-                            <div class="mt-3 pl-9">
-                                <div class="w-full h-2 bg-[#252526] rounded-full overflow-hidden mb-2.5 border border-[#363638]">
-                                    <div id="water-progress-bar" class="h-full bg-cyan-400 progress-fill rounded-full" style="width: 0%"></div>
-                                </div>
-                                <div class="flex flex-wrap items-center gap-2">
-                                    <button type="button" onclick="addWater(250)" class="px-3 py-1.5 rounded-lg bg-cyan-500/15 hover:bg-cyan-500/25 text-cyan-300 border border-cyan-500/30 text-xs font-semibold transition active:scale-95">
-                                        +250 ml
-                                    </button>
-                                    <button type="button" onclick="addWater(500)" class="px-3 py-1.5 rounded-lg bg-cyan-500/15 hover:bg-cyan-500/25 text-cyan-300 border border-cyan-500/30 text-xs font-semibold transition active:scale-95">
-                                        +500 ml
-                                    </button>
-                                    <button type="button" onclick="addWater(-250)" class="px-2.5 py-1.5 rounded-lg bg-[#252526] hover:bg-[#2D2D30] text-gray-400 hover:text-gray-200 border border-[#363638] text-xs font-medium transition ml-auto" title="Remove 250ml">
-                                        -250 ml
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Rule 6: Hit 8,000–10,000 Steps (With Editable Step Input) -->
-                        <div data-rule="steps" class="rule-item p-3.5 rounded-xl bg-[#1E1E1E] border border-[#363638] hover:border-gray-600 transition">
-                            <div class="flex items-start gap-3.5 cursor-pointer select-none" id="steps-rule-header">
-                                <button type="button" class="rule-checkbox checkbox-pop mt-0.5 w-6 h-6 rounded-lg border-2 border-gray-500 flex items-center justify-center shrink-0 focus:outline-none">
-                                    <svg class="w-3.5 h-3.5 text-[#1E1E1E] font-bold hidden check-icon" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                                </button>
-                                <div class="flex-1 min-w-0">
-                                    <div class="flex items-center justify-between">
-                                        <span class="rule-title text-sm sm:text-base font-medium text-gray-100">Hit 8,000–10,000 Steps</span>
-                                        <span id="steps-badge" class="text-xs font-bold text-emerald-400">0 / 8,000</span>
-                                    </div>
-                                    <p class="text-xs text-gray-400 mt-0.5">Low-stress daily calorie burn without spiking hunger.</p>
-                                </div>
-                            </div>
-                            <!-- Step Counter Input -->
-                            <div class="mt-3 pl-9 flex flex-wrap items-center gap-2">
-                                <div class="relative flex-1 min-w-[140px]">
-                                    <input type="number" id="steps-input" min="0" max="100000" step="500" placeholder="Enter steps..." 
-                                        class="w-full bg-[#252526] border border-[#363638] focus:border-emerald-500 rounded-lg px-3 py-1.5 text-sm text-white placeholder-gray-500 focus:outline-none transition">
-                                    <span class="absolute right-3 top-1.5 text-xs text-gray-400 pointer-events-none">steps</span>
-                                </div>
-                                <button type="button" onclick="addSteps(1000)" class="px-3 py-1.5 rounded-lg bg-[#252526] hover:bg-[#2D2D30] text-gray-200 border border-[#363638] text-xs font-medium transition active:scale-95">
-                                    +1,000
-                                </button>
-                                <button type="button" onclick="addSteps(2500)" class="px-3 py-1.5 rounded-lg bg-[#252526] hover:bg-[#2D2D30] text-gray-200 border border-[#363638] text-xs font-medium transition active:scale-95">
-                                    +2,500
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Rule 7: Complete Strength Training / Workout (With Rest Day Switch) -->
-                        <div data-rule="workout" class="rule-item p-3.5 rounded-xl bg-[#1E1E1E] border border-[#363638] hover:border-gray-600 transition">
-                            <div class="flex items-start gap-3.5">
-                                <button type="button" id="workout-checkbox" class="rule-checkbox checkbox-pop mt-0.5 w-6 h-6 rounded-lg border-2 border-gray-500 flex items-center justify-center shrink-0 focus:outline-none cursor-pointer">
-                                    <svg class="w-3.5 h-3.5 text-[#1E1E1E] font-bold hidden check-icon" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                                </button>
-                                <div class="flex-1 min-w-0">
-                                    <div class="flex flex-wrap items-center justify-between gap-2">
-                                        <span id="workout-title-text" class="rule-title text-sm sm:text-base font-medium text-gray-100 cursor-pointer">Complete Strength Training / Workout</span>
-                                        <!-- Rest Day Toggle Switch -->
-                                        <label class="inline-flex items-center gap-2 cursor-pointer bg-[#252526] px-2.5 py-1 rounded-lg border border-[#363638]">
-                                            <span class="text-xs font-medium text-gray-400">Rest Day</span>
-                                            <input type="checkbox" id="rest-day-toggle" class="sr-only peer">
-                                            <div class="relative w-8 h-4 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-cyan-500"></div>
-                                        </label>
-                                    </div>
-                                    <p id="workout-desc-text" class="text-xs text-gray-400 mt-0.5">Signals your body to keep muscle & burn pure fat.</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Rule 8: Sleep 7+ Hours -->
-                        <div data-rule="sleep" class="rule-item group flex items-start gap-3.5 p-3.5 rounded-xl bg-[#1E1E1E] border border-[#363638] hover:border-gray-600 transition cursor-pointer select-none">
-                            <button type="button" class="rule-checkbox checkbox-pop mt-0.5 w-6 h-6 rounded-lg border-2 border-gray-500 flex items-center justify-center shrink-0 focus:outline-none">
-                                <svg class="w-3.5 h-3.5 text-[#1E1E1E] font-bold hidden check-icon" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                            </button>
-                            <div class="flex-1 min-w-0">
-                                <span class="rule-title text-sm sm:text-base font-medium text-gray-100 block">Sleep 7+ Hours</span>
-                                <p class="text-xs text-gray-400 mt-0.5">Keeps cortisol low to prevent facial water retention & sugar cravings.</p>
-                            </div>
-                        </div>
-
-                    </div>
-                </section>
-            </div>
-
-            <!-- RIGHT COLUMN: MACRO LOGGER & MORNING WEIGH-IN (5 cols on lg) -->
-            <div class="lg:col-span-5 space-y-6">
-
-                <!-- 3. QUICK MACRO & CALORIE LOGGER WIDGET -->
-                <section class="bg-[#252526] border border-[#363638] rounded-2xl p-5 sm:p-6 shadow-lg">
-                    <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-lg font-bold text-white flex items-center gap-2">
-                            <svg class="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                            </svg>
-                            Macro & Calorie Logger
+                        <h2 id="selected-date-title" class="text-lg sm:text-xl font-bold text-white mt-1">
+                            Thursday, Nov 19, 2026
                         </h2>
-                        <span class="text-xs text-gray-400">Target: 1,950 kcal | 145g</span>
                     </div>
 
-                    <!-- Remaining Summary Boxes -->
-                    <div class="grid grid-cols-2 gap-3 mb-5">
-                        <!-- Calories Remaining -->
-                        <div class="bg-[#1E1E1E] border border-[#363638] rounded-xl p-3.5">
-                            <div class="flex justify-between items-center text-xs text-gray-400 mb-1">
-                                <span>Calories Left</span>
-                                <span id="cal-consumed-label" class="text-gray-300 font-medium">0 / 1,950</span>
-                            </div>
-                            <div id="cal-remaining-val" class="text-2xl font-bold text-cyan-400">1,950</div>
-                            <div class="w-full h-1.5 bg-[#252526] rounded-full overflow-hidden mt-2">
-                                <div id="cal-bar" class="h-full bg-cyan-400 progress-fill rounded-full" style="width: 0%"></div>
-                            </div>
-                        </div>
-
-                        <!-- Protein Remaining -->
-                        <div class="bg-[#1E1E1E] border border-[#363638] rounded-xl p-3.5">
-                            <div class="flex justify-between items-center text-xs text-gray-400 mb-1">
-                                <span>Protein Left</span>
-                                <span id="prot-consumed-label" class="text-gray-300 font-medium">0 / 145g</span>
-                            </div>
-                            <div id="prot-remaining-val" class="text-2xl font-bold text-emerald-400">145g</div>
-                            <div class="w-full h-1.5 bg-[#252526] rounded-full overflow-hidden mt-2">
-                                <div id="prot-bar" class="h-full bg-emerald-400 progress-fill rounded-full" style="width: 0%"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Add Meal Form -->
-                    <form id="meal-form" class="space-y-3 mb-4">
-                        <div>
-                            <input type="text" id="meal-name" placeholder="Meal name (e.g., Chicken Breast & Rice)" required
-                                class="w-full bg-[#1E1E1E] border border-[#363638] focus:border-cyan-500 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none transition">
-                        </div>
-                        <div class="grid grid-cols-2 gap-2.5">
-                            <div class="relative">
-                                <input type="number" id="meal-cals" min="0" max="5000" placeholder="Calories" required
-                                    class="w-full bg-[#1E1E1E] border border-[#363638] focus:border-cyan-500 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none transition">
-                                <span class="absolute right-3 top-2.5 text-xs text-gray-500">kcal</span>
-                            </div>
-                            <div class="relative">
-                                <input type="number" id="meal-prot" min="0" max="500" placeholder="Protein" required
-                                    class="w-full bg-[#1E1E1E] border border-[#363638] focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none transition">
-                                <span class="absolute right-3 top-2.5 text-xs text-gray-500">g</span>
-                            </div>
-                        </div>
-                        <button type="submit" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-cyan-600 hover:from-emerald-500 hover:to-cyan-500 text-white font-semibold text-sm shadow-md transition active:scale-[0.99] flex items-center justify-center gap-1.5">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                            Log Meal
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button type="button" id="btn-prev-day" class="px-2.5 py-2 rounded-xl bg-[#1E1E1E] hover:bg-[#2D2D30] border border-[#363638] text-gray-300 text-xs transition" title="Previous Day">
+                            ← Prev
                         </button>
-                    </form>
-
-                    <!-- Quick Preset Buttons -->
-                    <div class="mb-4">
-                        <span class="block text-[11px] uppercase tracking-wider text-gray-400 font-medium mb-2">Quick Add Protein Staples</span>
-                        <div class="flex flex-wrap gap-1.5">
-                            <button type="button" onclick="quickAddMeal('Chicken Breast/Thigh 200g', 330, 45)" class="text-xs px-2.5 py-1.5 rounded-lg bg-[#1E1E1E] hover:bg-[#2D2D30] border border-[#363638] text-gray-300 transition active:scale-95">
-                                + 200g Chicken (330 kcal / 45g)
-                            </button>
-                            <button type="button" onclick="quickAddMeal('3 Whole Eggs', 210, 18)" class="text-xs px-2.5 py-1.5 rounded-lg bg-[#1E1E1E] hover:bg-[#2D2D30] border border-[#363638] text-gray-300 transition active:scale-95">
-                                + 3 Eggs (210 kcal / 18g)
-                            </button>
-                            <button type="button" onclick="quickAddMeal('Greek Yogurt Bowl', 180, 25)" class="text-xs px-2.5 py-1.5 rounded-lg bg-[#1E1E1E] hover:bg-[#2D2D30] border border-[#363638] text-gray-300 transition active:scale-95">
-                                + Greek Yogurt (180 kcal / 25g)
-                            </button>
-                            <button type="button" onclick="quickAddMeal('Whey Protein Scoop', 120, 25)" class="text-xs px-2.5 py-1.5 rounded-lg bg-[#1E1E1E] hover:bg-[#2D2D30] border border-[#363638] text-gray-300 transition active:scale-95">
-                                + Whey Scoop (120 kcal / 25g)
-                            </button>
-                            <button type="button" onclick="quickAddMeal('Chipotle Chicken Bowl', 620, 50)" class="text-xs px-2.5 py-1.5 rounded-lg bg-[#1E1E1E] hover:bg-[#2D2D30] border border-[#363638] text-gray-300 transition active:scale-95">
-                                + Chicken Bowl (620 kcal / 50g)
-                            </button>
-                        </div>
+                        <button type="button" id="btn-next-day" class="px-2.5 py-2 rounded-xl bg-[#1E1E1E] hover:bg-[#2D2D30] border border-[#363638] text-gray-300 text-xs transition" title="Next Day">
+                            Next →
+                        </button>
+                        <button type="button" id="btn-clear-date" class="px-2.5 py-2 rounded-xl bg-[#1E1E1E] hover:bg-rose-500/15 border border-[#363638] hover:border-rose-500/40 text-gray-400 hover:text-rose-300 text-xs transition" title="Clear this day's log">
+                            Clear
+                        </button>
+                        <button type="button" id="btn-close-day-modal" class="px-3 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-semibold transition flex items-center gap-1">
+                            Done &amp; Back to Calendar
+                        </button>
                     </div>
+                </div>
 
-                    <!-- Today's Logged Meals List -->
-                    <div class="border-t border-[#363638] pt-3">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="text-xs font-semibold text-gray-300">Today's Meals (<span id="meal-count">0</span>)</span>
-                        </div>
-                        <div id="meals-list" class="space-y-2 max-h-48 overflow-y-auto pr-1">
-                            <p class="text-xs text-gray-500 italic text-center py-3">No meals logged yet today.</p>
-                        </div>
-                    </div>
-                </section>
+                <!-- Modal Scrollable Body -->
+                <div class="p-4 sm:p-6 space-y-6 max-h-[82vh] overflow-y-auto">
 
-                <!-- 4. NON-SCALE VISUAL & FIT CHECK-IN -->
-                <section class="bg-[#252526] border border-[#363638] rounded-2xl p-5 sm:p-6 shadow-lg">
-                    <div class="flex items-center justify-between mb-4">
-                        <div>
-                            <h2 class="text-lg font-bold text-white flex items-center gap-2">
-                                <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                </svg>
-                                Non-Scale Visual & Fit Check-In
-                            </h2>
-                            <p class="text-xs text-gray-400 mt-0.5">Track jawline sharpness & clothing fit without a scale</p>
-                        </div>
-                        <span id="latest-sharpness-badge" class="text-xs font-semibold px-2.5 py-1 rounded-full bg-[#1E1E1E] text-cyan-400 border border-[#363638]">
-                            No logs yet
-                        </span>
-                    </div>
-
-                    <!-- Check-In Form -->
-                    <form id="visual-checkin-form" class="space-y-3.5 mb-4">
-                        <!-- 1-5 Jawline Sharpness Rating -->
-                        <div>
-                            <div class="flex items-center justify-between mb-1.5">
-                                <label class="text-xs font-medium text-gray-300">Jawline Sharpness / Puffiness</label>
-                                <span id="sharpness-label-hint" class="text-xs font-semibold text-cyan-400">3 — Normal</span>
-                            </div>
-                            <div class="grid grid-cols-5 gap-2" id="sharpness-selector">
-                                <button type="button" data-rating="1" class="sharpness-btn py-2 rounded-xl bg-[#1E1E1E] border border-[#363638] text-xs font-bold text-gray-400 hover:border-gray-500 transition">1</button>
-                                <button type="button" data-rating="2" class="sharpness-btn py-2 rounded-xl bg-[#1E1E1E] border border-[#363638] text-xs font-bold text-gray-400 hover:border-gray-500 transition">2</button>
-                                <button type="button" data-rating="3" class="sharpness-btn py-2 rounded-xl bg-cyan-500/20 border border-cyan-400 text-xs font-bold text-cyan-300 transition">3</button>
-                                <button type="button" data-rating="4" class="sharpness-btn py-2 rounded-xl bg-[#1E1E1E] border border-[#363638] text-xs font-bold text-gray-400 hover:border-gray-500 transition">4</button>
-                                <button type="button" data-rating="5" class="sharpness-btn py-2 rounded-xl bg-[#1E1E1E] border border-[#363638] text-xs font-bold text-gray-400 hover:border-gray-500 transition">5</button>
-                            </div>
-                            <div class="flex justify-between text-[10px] text-gray-500 mt-1 px-0.5">
-                                <span>1 = Puffy / Bloated</span>
-                                <span>3 = Normal</span>
-                                <span>5 = Sharp / Defined</span>
+                    <!-- Day Score Summary & 8 Rules -->
+                    <section class="bg-[#252526] border border-[#363638] rounded-2xl p-4 sm:p-5">
+                        <div class="flex flex-wrap items-center justify-between gap-2 text-xs mb-2.5">
+                            <span class="text-gray-300 font-medium">
+                                Score: <strong id="day-done-count" class="text-emerald-400">0</strong> Done · <strong id="day-missed-count" class="text-rose-400">0</strong> Missed · <strong id="day-pending-count" class="text-gray-400">8</strong> Unlogged
+                            </span>
+                            <div class="flex items-center gap-2">
+                                <button type="button" id="btn-mark-all-done" class="px-2.5 py-1 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 text-[11px] font-semibold transition">
+                                    ✓ Mark All Done
+                                </button>
+                                <span id="day-score-pct" class="font-bold text-cyan-400">0%</span>
                             </div>
                         </div>
+                        <div class="w-full h-2.5 bg-[#1E1E1E] rounded-full overflow-hidden flex border border-[#363638] mb-4">
+                            <div id="bar-done" class="h-full bg-emerald-500 progress-fill" style="width: 0%"></div>
+                            <div id="bar-missed" class="h-full bg-rose-500 progress-fill" style="width: 0%"></div>
+                        </div>
 
-                        <!-- Collar & Belt Fit + Morning Selfie Toggle -->
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                        <div class="space-y-2.5" id="rules-container">
+                            <!-- Rendered dynamically via JS -->
+                        </div>
+                    </section>
+
+                    <!-- DAILY NUMBERS: HYDRATION (WITH CUSTOM BUTTONS) & STEPS -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        
+                        <!-- Custom Hydration Controls Card -->
+                        <section class="bg-[#252526] border border-[#363638] rounded-2xl p-4 sm:p-5 space-y-3.5">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                                    <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
+                                    Hydration Log
+                                </h3>
+                                <span class="font-bold text-xs text-cyan-400"><span id="water-display">0.00</span>L / 2.85L</span>
+                            </div>
+
+                            <div class="w-full h-2 bg-[#1E1E1E] rounded-full overflow-hidden border border-[#363638]">
+                                <div id="water-bar" class="h-full bg-cyan-400 progress-fill rounded-full" style="width: 0%"></div>
+                            </div>
+
+                            <!-- Customizable Quick-Add Water Buttons -->
                             <div>
-                                <label for="fit-status-select" class="block text-[11px] font-medium text-gray-400 mb-1">Collar & Belt Fit</label>
-                                <select id="fit-status-select" class="w-full bg-[#1E1E1E] border border-[#363638] focus:border-emerald-500 rounded-xl px-3 py-2 text-xs text-white focus:outline-none transition">
-                                    <option value="Same">Same as baseline</option>
-                                    <option value="Looser / Noticeable">Looser / Noticeable</option>
-                                    <option value="Tighter">Tighter / Bloated</option>
-                                </select>
+                                <div class="flex items-center justify-between text-[11px] text-gray-400 mb-1.5">
+                                    <span>Quick-Add Presets</span>
+                                    <button type="button" id="btn-toggle-water-presets" class="text-cyan-400 hover:underline">Customize presets</button>
+                                </div>
+                                <div id="water-presets-grid" class="flex flex-wrap gap-1.5">
+                                    <!-- Rendered dynamically via JS -->
+                                </div>
                             </div>
-                            <div class="flex flex-col justify-end">
-                                <label class="flex items-center justify-between bg-[#1E1E1E] border border-[#363638] hover:border-gray-600 rounded-xl px-3 py-2 cursor-pointer select-none transition">
-                                    <span class="text-xs font-medium text-gray-300 flex items-center gap-1.5">
-                                        <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                                        Morning Selfie Taken
-                                    </span>
-                                    <input type="checkbox" id="selfie-taken-checkbox" class="w-4 h-4 rounded accent-emerald-500 cursor-pointer">
+
+                            <!-- Add Custom Preset Editor (Hidden by default) -->
+                            <div id="water-preset-editor" class="hidden bg-[#1E1E1E] border border-[#363638] rounded-xl p-2.5 space-y-2">
+                                <p class="text-[11px] text-gray-400">Add a custom bottle/cup button (e.g., 600ml tumbler):</p>
+                                <div class="flex gap-1.5">
+                                    <input type="text" id="new-preset-label" placeholder="Label (e.g. Bottle)" class="w-1/2 bg-[#252526] border border-[#363638] rounded-lg px-2.5 py-1 text-xs text-white focus:outline-none">
+                                    <input type="number" id="new-preset-ml" min="50" max="5000" step="50" placeholder="ml (e.g. 600)" class="w-1/3 bg-[#252526] border border-[#363638] rounded-lg px-2.5 py-1 text-xs text-white focus:outline-none">
+                                    <button type="button" id="btn-save-water-preset" class="flex-1 bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-semibold rounded-lg px-2 py-1 transition">Save</button>
+                                </div>
+                            </div>
+
+                            <!-- Direct Custom ml Input -->
+                            <div class="flex gap-2 pt-1">
+                                <input type="number" id="custom-water-input" min="1" max="5000" step="50" placeholder="Custom ml (e.g. 420)" class="w-full bg-[#1E1E1E] border border-[#363638] focus:border-cyan-500 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none">
+                                <button type="button" id="btn-add-custom-water" class="px-3 py-1.5 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-500/40 text-cyan-300 text-xs font-semibold shrink-0 transition">+ Add ml</button>
+                            </div>
+                        </section>
+
+                        <!-- Steps & Visual Jawline Check-In Card -->
+                        <section class="bg-[#252526] border border-[#363638] rounded-2xl p-4 sm:p-5 space-y-3.5">
+                            <!-- Steps -->
+                            <div>
+                                <div class="flex justify-between items-center text-xs mb-1.5">
+                                    <span class="text-sm font-bold text-white">Daily Steps</span>
+                                    <span id="steps-display" class="font-bold text-emerald-400">0 / 8,000</span>
+                                </div>
+                                <div class="flex gap-1.5 mb-1.5">
+                                    <button type="button" onclick="adjustSteps(1000)" class="flex-1 py-1 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 text-[11px] font-semibold transition">+1k</button>
+                                    <button type="button" onclick="adjustSteps(2500)" class="flex-1 py-1 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 text-[11px] font-semibold transition">+2.5k</button>
+                                    <button type="button" onclick="setExactSteps(8000)" class="flex-1 py-1 rounded-lg bg-[#1E1E1E] hover:bg-[#2D2D30] border border-[#363638] text-gray-300 text-[11px] font-semibold transition">Set 8k</button>
+                                    <button type="button" onclick="setExactSteps(10000)" class="flex-1 py-1 rounded-lg bg-[#1E1E1E] hover:bg-[#2D2D30] border border-[#363638] text-gray-300 text-[11px] font-semibold transition">Set 10k</button>
+                                </div>
+                                <input type="number" id="steps-input" min="0" max="100000" step="500" placeholder="Or type exact steps..." class="w-full bg-[#1E1E1E] border border-[#363638] focus:border-emerald-500 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none">
+                            </div>
+
+                            <hr class="border-[#363638]">
+
+                            <!-- 1-5 Sharpness Rating -->
+                            <div>
+                                <div class="flex items-center justify-between mb-1.5">
+                                    <span class="text-xs font-semibold text-gray-300">Jawline Sharpness (1–5)</span>
+                                    <span id="sharpness-hint" class="text-[11px] font-semibold text-cyan-400">Not rated</span>
+                                </div>
+                                <div class="grid grid-cols-5 gap-1.5" id="sharpness-buttons">
+                                    <button type="button" data-val="1" class="sharp-btn py-1.5 rounded-lg bg-[#1E1E1E] border border-[#363638] text-xs font-bold text-gray-400">1</button>
+                                    <button type="button" data-val="2" class="sharp-btn py-1.5 rounded-lg bg-[#1E1E1E] border border-[#363638] text-xs font-bold text-gray-400">2</button>
+                                    <button type="button" data-val="3" class="sharp-btn py-1.5 rounded-lg bg-[#1E1E1E] border border-[#363638] text-xs font-bold text-gray-400">3</button>
+                                    <button type="button" data-val="4" class="sharp-btn py-1.5 rounded-lg bg-[#1E1E1E] border border-[#363638] text-xs font-bold text-gray-400">4</button>
+                                    <button type="button" data-val="5" class="sharp-btn py-1.5 rounded-lg bg-[#1E1E1E] border border-[#363638] text-xs font-bold text-gray-400">5</button>
+                                </div>
+                            </div>
+
+                            <!-- Fit & Selfie -->
+                            <div class="grid grid-cols-2 gap-2">
+                                <select id="day-fit-select" class="bg-[#1E1E1E] border border-[#363638] focus:border-emerald-500 rounded-lg px-2.5 py-2 text-xs text-white focus:outline-none">
+                                    <option value="">Collar/Belt Fit...</option>
+                                    <option value="Same">Fit: Same</option>
+                                    <option value="Looser">Fit: Looser</option>
+                                    <option value="Tighter">Fit: Tighter</option>
+                                </select>
+                                <label class="flex items-center justify-between bg-[#1E1E1E] border border-[#363638] rounded-lg px-2.5 py-2 text-xs text-gray-300 cursor-pointer">
+                                    <span>📸 Selfie</span>
+                                    <input type="checkbox" id="day-selfie-check" class="rounded accent-emerald-500">
                                 </label>
                             </div>
+
+                            <!-- Daily Reflection / Note -->
+                            <input type="text" id="day-note-input" placeholder="Daily note (e.g., Ate out at night, high sodium)..." class="w-full bg-[#1E1E1E] border border-[#363638] focus:border-cyan-500 rounded-lg px-3 py-2 text-xs text-white placeholder-gray-500 focus:outline-none">
+                        </section>
+                    </div>
+
+                    <!-- MEAL & MACRO LOGGER FOR SELECTED DATE -->
+                    <section class="bg-[#252526] border border-[#363638] rounded-2xl p-4 sm:p-5">
+                        <div class="flex flex-wrap items-center justify-between gap-2 mb-3.5">
+                            <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                                <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                                Meals &amp; Macros
+                            </h3>
+                            <div class="flex items-center gap-2 text-xs">
+                                <button type="button" id="btn-copy-prev-meals" class="px-2.5 py-1 rounded-lg bg-[#1E1E1E] hover:bg-[#2D2D30] border border-[#363638] text-cyan-400 text-[11px] font-medium transition" title="Copy meals from the day before">
+                                    Copy Prev Day Meals
+                                </button>
+                                <span id="macro-cals-summary" class="font-bold text-cyan-400">0 / 2,000 kcal</span>
+                                <span class="text-gray-500">|</span>
+                                <span id="macro-prot-summary" class="font-bold text-emerald-400">0 / 150g P</span>
+                            </div>
                         </div>
 
-                        <!-- Quick Visual/Fit Note & Submit -->
-                        <div class="flex gap-2">
-                            <input type="text" id="visual-note-input" placeholder="Note (e.g., Less cheek puffiness, belt -1 notch)"
-                                class="flex-1 bg-[#1E1E1E] border border-[#363638] focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-gray-500 focus:outline-none transition">
-                            <button type="submit" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition active:scale-95 shrink-0">
-                                Log Check-In
+                        <!-- Meal Input Row -->
+                        <form id="meal-form" class="grid grid-cols-1 sm:grid-cols-12 gap-2 mb-3">
+                            <input type="text" id="meal-name" placeholder="Food / Meal name" required class="sm:col-span-5 bg-[#1E1E1E] border border-[#363638] focus:border-cyan-500 rounded-xl px-3 py-2 text-xs text-white placeholder-gray-500 focus:outline-none">
+                            <input type="number" id="meal-cals" min="0" max="5000" placeholder="kcal" required class="sm:col-span-2 bg-[#1E1E1E] border border-[#363638] focus:border-cyan-500 rounded-xl px-3 py-2 text-xs text-white placeholder-gray-500 focus:outline-none">
+                            <input type="number" id="meal-prot" min="0" max="500" placeholder="Protein (g)" required class="sm:col-span-2 bg-[#1E1E1E] border border-[#363638] focus:border-emerald-500 rounded-xl px-3 py-2 text-xs text-white placeholder-gray-500 focus:outline-none">
+                            <button type="submit" class="sm:col-span-3 py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition">
+                                + Log Meal
                             </button>
+                        </form>
+
+                        <!-- Quick Add Staples -->
+                        <div class="flex flex-wrap gap-1.5 mb-3.5">
+                            <button type="button" onclick="addMeal('200g Chicken Breast/Thigh', 330, 45)" class="text-[11px] px-2.5 py-1 rounded-lg bg-[#1E1E1E] hover:bg-[#2D2D30] border border-[#363638] text-gray-300 transition">+ 200g Chicken (330/45g)</button>
+                            <button type="button" onclick="addMeal('3 Whole Eggs', 210, 18)" class="text-[11px] px-2.5 py-1 rounded-lg bg-[#1E1E1E] hover:bg-[#2D2D30] border border-[#363638] text-gray-300 transition">+ 3 Eggs (210/18g)</button>
+                            <button type="button" onclick="addMeal('Greek Yogurt Bowl', 180, 25)" class="text-[11px] px-2.5 py-1 rounded-lg bg-[#1E1E1E] hover:bg-[#2D2D30] border border-[#363638] text-gray-300 transition">+ Yogurt (180/25g)</button>
+                            <button type="button" onclick="addMeal('Whey Scoop', 120, 25)" class="text-[11px] px-2.5 py-1 rounded-lg bg-[#1E1E1E] hover:bg-[#2D2D30] border border-[#363638] text-gray-300 transition">+ Whey (120/25g)</button>
+                            <button type="button" onclick="addMeal('Salmon & Rice Bowl', 560, 40)" class="text-[11px] px-2.5 py-1 rounded-lg bg-[#1E1E1E] hover:bg-[#2D2D30] border border-[#363638] text-gray-300 transition">+ Salmon Bowl (560/40g)</button>
                         </div>
-                    </form>
 
-                    <!-- Check-In History List -->
-                    <div id="visual-history-list" class="space-y-2 max-h-40 overflow-y-auto mb-4 pr-1">
-                        <!-- Populated via JS -->
-                    </div>
-
-                    <!-- 2-Week Adjustment Rule Callout -->
-                    <div class="bg-[#1E1E1E] border border-cyan-500/20 rounded-xl p-3.5 flex items-start gap-3">
-                        <svg class="w-5 h-5 text-cyan-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <div class="text-xs text-gray-300 leading-relaxed">
-                            <strong class="text-cyan-400 font-semibold">2-Week Rule:</strong> If jawline definition &amp; clothing fit haven't improved after 14 days of consistent adherence, trim <strong>150 kcal</strong> from daily carbs/fats.
+                        <!-- Logged Meals List -->
+                        <div id="meals-list" class="space-y-2 max-h-40 overflow-y-auto pr-1">
+                            <!-- Rendered via JS -->
                         </div>
-                    </div>
-                </section>
+                    </section>
 
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        // --- CONSTANTS & CONFIG ---
-        const STORAGE_KEY = 'jawline_cut_tracker_v2';
-        const TARGET_CALORIES = 1950;
-        const TARGET_PROTEIN = 145;
-        const TARGET_WATER_ML = 2750; // 2.75L midpoint of 2.5L - 3.0L
+        // --- CONFIGURATION & RULE DEFINITIONS ---
+        const STORAGE_KEY = 'jawline_calendar_tracker_v3';
+        const TARGET_CALORIES = 2000;
+        const TARGET_PROTEIN = 150;
+        const TARGET_WATER_ML = 2850;
         const TARGET_STEPS = 8000;
 
-        const SHARPNESS_LABELS = {
-            1: '1 — Puffy / Bloated',
-            2: '2 — Slightly Soft',
-            3: '3 — Normal',
-            4: '4 — Lean / Tight',
-            5: '5 — Sharp / Defined'
+        const SHARPNESS_TEXT = {
+            1: '1/5 · Very Puffy',
+            2: '2/5 · Soft / Retaining',
+            3: '3/5 · Normal',
+            4: '4/5 · Defined',
+            5: '5/5 · Razor Sharp'
         };
 
-        // --- DEFAULT STATE ---
-        const defaultState = {
-            lastActiveDate: new Date().toLocaleDateString('en-CA'), // YYYY-MM-DD
-            streak: 0,
-            lastStreakCompletedDate: null,
-            rules: {
-                protein: false,
-                calories: false,
-                liquidCalories: false,
-                lowSodium: false,
-                water: false,
-                steps: false,
-                workout: false,
-                sleep: false
-            },
-            isRestDay: false,
-            waterMl: 0,
-            steps: 0,
-            meals: [],
-            visualCheckIns: []
-        };
+        const DEFAULT_WATER_PRESETS = [
+            { id: 'w1', label: 'Cup', ml: 250 },
+            { id: 'w2', label: 'Bottle', ml: 500 },
+            { id: 'w3', label: 'Large', ml: 750 },
+            { id: 'w4', label: '1L Jug', ml: 1000 }
+        ];
 
-        let selectedSharpness = 3;
-        let state = loadState();
+        // Rule status values: null (unlogged), 'done' (achieved), 'missed' (did not achieve)
+        const DEFAULT_RULES_CONFIG = [
+            { id: 'protein', title: 'Hit 140g–165g Protein', desc: 'Preserves lean muscle & controls hunger at 77kg.' },
+            { id: 'calories', title: 'Stay in 1,950–2,050 kcal', desc: '~450 kcal daily deficit for steady fat loss.' },
+            { id: 'liquidCalories', title: 'Zero Liquid Calories', desc: 'No sugary drinks, bubble tea, juices, or alcohol.' },
+            { id: 'lowSodium', title: 'Low Sodium & Clean Sauces', desc: 'Avoid fast food & heavy sauces to prevent cheek puffiness.' },
+            { id: 'water', title: 'Drink 2.7L–3.0L Water', desc: 'Flushes sodium & tightens facial water retention.' },
+            { id: 'steps', title: 'Hit 8,000–10,000 Steps', desc: 'Daily low-stress fat burn.' },
+            { id: 'workout', title: 'Workout / Planned Rest Day', desc: 'Strength training or intentional recovery day.' },
+            { id: 'sleep', title: 'Sleep 7+ Hours', desc: 'Keeps cortisol & morning water retention low.' }
+        ];
+
+        function toISODate(dt) {
+            const y = dt.getFullYear();
+            const m = String(dt.getMonth() + 1).padStart(2, '0');
+            const d = String(dt.getDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
+        }
+
+        function parseISODate(isoStr) {
+            const [y, m, d] = isoStr.split('-').map(Number);
+            return new Date(y, m - 1, d);
+        }
+
+        // --- APP STATE ---
+        const todayStr = toISODate(new Date());
+        let currentMonthDate = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+        let selectedDate = null;
+        let isEditingWaterPresets = false;
+        let store = loadStore();
+
+        function getActiveRules() {
+            return Array.isArray(store.customRules) && store.customRules.length > 0
+                ? store.customRules
+                : DEFAULT_RULES_CONFIG;
+        }
+
+        function createEmptyDay() {
+            const rules = {};
+            getActiveRules().forEach(r => { rules[r.id] = null; });
+            return {
+                rules,
+                waterMl: 0,
+                steps: 0,
+                meals: [],
+                sharpness: null,
+                fit: '',
+                selfie: false,
+                note: ''
+            };
+        }
+
+        function getDayData(dateStr) {
+            if (!store.days[dateStr]) {
+                return createEmptyDay();
+            }
+            const base = createEmptyDay();
+            const existing = store.days[dateStr];
+            return {
+                ...base,
+                ...existing,
+                rules: { ...base.rules, ...(existing.rules || {}) },
+                meals: Array.isArray(existing.meals) ? existing.meals : []
+            };
+        }
+
+        function ensureDayData(dateStr) {
+            if (!store.days[dateStr]) {
+                store.days[dateStr] = createEmptyDay();
+            }
+            return store.days[dateStr];
+        }
+
+        function loadStore() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    if (parsed && typeof parsed.days === 'object') {
+                        if (!Array.isArray(parsed.waterPresets) || parsed.waterPresets.length === 0) {
+                            parsed.waterPresets = [...DEFAULT_WATER_PRESETS];
+                        }
+                        if (!Array.isArray(parsed.customRules) || parsed.customRules.length === 0) {
+                            parsed.customRules = [...DEFAULT_RULES_CONFIG];
+                        }
+                        return parsed;
+                    }
+                }
+                // Migrate any v2 single-day data into today's calendar slot if available
+                const rawV2 = localStorage.getItem('jawline_cut_tracker_v2');
+                if (rawV2) {
+                    const v2 = JSON.parse(rawV2);
+                    const migratedDay = { rules: {}, waterMl: v2.waterMl || 0, steps: v2.steps || 0, meals: Array.isArray(v2.meals) ? v2.meals : [], sharpness: null, fit: '', selfie: false, note: '' };
+                    DEFAULT_RULES_CONFIG.forEach(r => {
+                        migratedDay.rules[r.id] = (v2.rules && v2.rules[r.id]) ? 'done' : null;
+                    });
+                    return { days: { [todayStr]: migratedDay }, waterPresets: [...DEFAULT_WATER_PRESETS], customRules: [...DEFAULT_RULES_CONFIG] };
+                }
+            } catch (e) {
+                console.error('Failed to load store:', e);
+            }
+            return { days: {}, waterPresets: [...DEFAULT_WATER_PRESETS], customRules: [...DEFAULT_RULES_CONFIG] };
+        }
+
+        function saveStore() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(store));
+            } catch (e) {
+                console.error('Failed to save store:', e);
+            }
+        }
 
         // --- INITIALIZATION ---
         document.addEventListener('DOMContentLoaded', () => {
-            updateDateDisplay();
-            checkAutoDayRollover();
-            setupEventListeners();
+            setupListeners();
             renderAll();
         });
 
-        function loadState() {
-            try {
-                // Migrate from v1 if present and v2 doesn't exist yet
-                const rawV2 = localStorage.getItem(STORAGE_KEY);
-                const rawV1 = localStorage.getItem('jawline_cut_tracker_v1');
-                const raw = rawV2 || rawV1;
-                if (!raw) return JSON.parse(JSON.stringify(defaultState));
-                const parsed = JSON.parse(raw);
-                return {
-                    ...defaultState,
-                    ...parsed,
-                    rules: { ...defaultState.rules, ...(parsed.rules || {}) },
-                    visualCheckIns: Array.isArray(parsed.visualCheckIns) ? parsed.visualCheckIns : []
-                };
-            } catch (e) {
-                console.error('Error reading localStorage:', e);
-                return JSON.parse(JSON.stringify(defaultState));
-            }
-        }
-
-        function saveState() {
-            try {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-            } catch (e) {
-                console.error('Error saving to localStorage:', e);
-            }
-        }
-
-        function updateDateDisplay() {
-            const options = { weekday: 'long', month: 'short', day: 'numeric' };
-            document.getElementById('current-date-display').textContent = new Date().toLocaleDateString('en-US', options);
-        }
-
-        // Automatically detect if a new calendar day has started
-        function checkAutoDayRollover() {
-            const todayStr = new Date().toLocaleDateString('en-CA');
-            if (state.lastActiveDate && state.lastActiveDate !== todayStr) {
-                // Evaluate if yesterday hit at least 6/8 rules (75%+) to keep/increment streak
-                const completedCount = Object.values(state.rules).filter(Boolean).length;
-                if (completedCount >= 6 && state.lastStreakCompletedDate !== state.lastActiveDate) {
-                    state.streak += 1;
-                    state.lastStreakCompletedDate = state.lastActiveDate;
-                }
-                // Reset daily metrics for the new day
-                resetDailyMetrics(false);
-                state.lastActiveDate = todayStr;
-                saveState();
-                showToast('New day started! Daily checklist & logs have been refreshed.', 'cyan');
-            }
-        }
-
-        function resetDailyMetrics(notify = true) {
-            state.rules = {
-                protein: false,
-                calories: false,
-                liquidCalories: false,
-                lowSodium: false,
-                water: false,
-                steps: false,
-                workout: false,
-                sleep: false
-            };
-            state.isRestDay = false;
-            state.waterMl = 0;
-            state.steps = 0;
-            state.meals = [];
-            saveState();
-            renderAll();
-            if (notify) {
-                showToast('Daily progress reset for a fresh start.', 'emerald');
-            }
-        }
-
-        // --- EVENT LISTENERS ---
-        function setupEventListeners() {
-            // Standard Checklist Items click handling
-            const simpleRules = ['protein', 'calories', 'liquidCalories', 'lowSodium', 'sleep'];
-            simpleRules.forEach(ruleKey => {
-                const row = document.querySelector(`[data-rule="${ruleKey}"]`);
-                if (row) {
-                    row.addEventListener('click', () => {
-                        toggleRule(ruleKey);
-                    });
-                }
+        function setupListeners() {
+            // Month navigation
+            document.getElementById('btn-prev-month').addEventListener('click', () => {
+                currentMonthDate = new Date(currentMonthDate.getFullYear(), currentMonthDate.getMonth() - 1, 1);
+                renderCalendar();
+                renderMonthlyStats();
             });
 
-            // Water rule header click
-            document.getElementById('water-rule-header').addEventListener('click', () => {
-                toggleRule('water');
+            document.getElementById('btn-next-month').addEventListener('click', () => {
+                currentMonthDate = new Date(currentMonthDate.getFullYear(), currentMonthDate.getMonth() + 1, 1);
+                renderCalendar();
+                renderMonthlyStats();
             });
 
-            // Steps rule header click
-            document.getElementById('steps-rule-header').addEventListener('click', () => {
-                toggleRule('steps');
+            document.getElementById('btn-current-month').addEventListener('click', () => {
+                const now = new Date();
+                currentMonthDate = new Date(now.getFullYear(), now.getMonth(), 1);
+                renderCalendar();
+                renderMonthlyStats();
             });
 
-            // Steps input listener
-            const stepsInput = document.getElementById('steps-input');
-            stepsInput.addEventListener('input', (e) => {
-                const val = parseInt(e.target.value, 10) || 0;
-                state.steps = Math.max(0, val);
-                if (state.steps >= TARGET_STEPS && !state.rules.steps) {
-                    state.rules.steps = true;
-                    showToast('8,000+ steps hit! Great job.', 'emerald');
-                }
-                checkStreakCompletion();
-                saveState();
-                renderChecklist();
+            // Open Today's Log
+            document.getElementById('btn-jump-today').addEventListener('click', () => {
+                const now = new Date();
+                currentMonthDate = new Date(now.getFullYear(), now.getMonth(), 1);
+                openDayModal(todayStr);
             });
 
-            // Workout checkbox & title click
-            const toggleWorkout = () => toggleRule('workout');
-            document.getElementById('workout-checkbox').addEventListener('click', toggleWorkout);
-            document.getElementById('workout-title-text').addEventListener('click', toggleWorkout);
-
-            // Rest day toggle switch
-            document.getElementById('rest-day-toggle').addEventListener('change', (e) => {
-                state.isRestDay = e.target.checked;
-                if (state.isRestDay) {
-                    state.rules.workout = true;
-                    showToast('Rest day active — recovery rule checked!', 'cyan');
-                }
-                checkStreakCompletion();
-                saveState();
-                renderChecklist();
+            // Customize Rules Modal
+            const rulesModal = document.getElementById('rules-modal');
+            document.getElementById('btn-open-rules-modal').addEventListener('click', () => {
+                renderCustomRulesModal();
+                rulesModal.classList.remove('hidden');
+                rulesModal.classList.add('flex');
             });
-
-            // Meal logging form
-            document.getElementById('meal-form').addEventListener('submit', (e) => {
+            document.getElementById('rules-modal-close').addEventListener('click', () => {
+                rulesModal.classList.add('hidden');
+                rulesModal.classList.remove('flex');
+            });
+            document.getElementById('add-rule-form').addEventListener('submit', (e) => {
                 e.preventDefault();
-                const nameInput = document.getElementById('meal-name');
-                const calsInput = document.getElementById('meal-cals');
-                const protInput = document.getElementById('meal-prot');
+                const titleEl = document.getElementById('new-rule-title');
+                const descEl = document.getElementById('new-rule-desc');
+                const title = titleEl.value.trim();
+                const desc = descEl.value.trim() || 'Custom daily habit';
+                if (!title) return;
+                store.customRules.push({ id: 'rule_' + Date.now(), title, desc });
+                saveStore();
+                titleEl.value = '';
+                descEl.value = '';
+                renderCustomRulesModal();
+                renderAll();
+                showToast('New daily rule added!', 'emerald');
+            });
 
-                const name = nameInput.value.trim();
-                const cals = parseInt(calsInput.value, 10);
-                const prot = parseInt(protInput.value, 10);
+            // Mark All Done button
+            document.getElementById('btn-mark-all-done').addEventListener('click', () => {
+                if (!selectedDate) return;
+                const day = ensureDayData(selectedDate);
+                getActiveRules().forEach(r => { day.rules[r.id] = 'done'; });
+                saveStore();
+                renderAll();
+                showToast('All rules marked Done for this day!', 'emerald');
+            });
 
-                if (name && !isNaN(cals) && !isNaN(prot)) {
-                    addMeal(name, cals, prot);
-                    nameInput.value = '';
-                    calsInput.value = '';
-                    protInput.value = '';
+            // Copy Previous Day's Meals
+            document.getElementById('btn-copy-prev-meals').addEventListener('click', () => {
+                if (!selectedDate) return;
+                const prevDt = parseISODate(selectedDate);
+                prevDt.setDate(prevDt.getDate() - 1);
+                const prevIso = toISODate(prevDt);
+                const prevDay = store.days[prevIso];
+                if (!prevDay || !Array.isArray(prevDay.meals) || prevDay.meals.length === 0) {
+                    showToast(`No meals found on ${prevIso}`, 'rose');
+                    return;
                 }
+                const day = ensureDayData(selectedDate);
+                const copied = prevDay.meals.map((m, idx) => ({
+                    ...m,
+                    id: Date.now() + idx
+                }));
+                day.meals = [...copied, ...day.meals];
+                saveStore();
+                renderAll();
+                showToast(`Copied ${copied.length} meals from ${prevIso}!`, 'cyan');
             });
 
-            // Non-Scale Visual & Fit Check-In
-            setupSharpnessSelector();
-            document.getElementById('visual-checkin-form').addEventListener('submit', (e) => {
-                e.preventDefault();
-                const fitStatus = document.getElementById('fit-status-select').value;
-                const selfieTaken = document.getElementById('selfie-taken-checkbox').checked;
-                const noteInput = document.getElementById('visual-note-input');
-                const note = noteInput.value.trim();
-
-                state.visualCheckIns.unshift({
-                    id: Date.now(),
-                    date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-                    sharpness: selectedSharpness,
-                    fit: fitStatus,
-                    selfie: selfieTaken,
-                    note: note
-                });
-
-                if (state.visualCheckIns.length > 20) {
-                    state.visualCheckIns.pop();
-                }
-
-                noteInput.value = '';
-                document.getElementById('selfie-taken-checkbox').checked = false;
-                saveState();
-                renderVisualCheckIns();
-                showToast('Visual & fit check-in logged!', 'emerald');
+            // Close Day Modal
+            const dayModal = document.getElementById('day-modal');
+            document.getElementById('btn-close-day-modal').addEventListener('click', closeDayModal);
+            dayModal.addEventListener('click', (e) => {
+                if (e.target === dayModal) closeDayModal();
+            });
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && selectedDate) closeDayModal();
             });
 
-            // Backup & Restore Modal Listeners
-            const backupModal = document.getElementById('backup-modal');
-            document.getElementById('btn-open-backup').addEventListener('click', () => {
-                document.getElementById('backup-json-area').value = JSON.stringify(state, null, 2);
-                backupModal.classList.remove('hidden');
-                backupModal.classList.add('flex');
-            });
+            // Prev / Next Day buttons inside modal
+            document.getElementById('btn-prev-day').addEventListener('click', () => shiftSelectedDate(-1));
+            document.getElementById('btn-next-day').addEventListener('click', () => shiftSelectedDate(1));
 
-            document.getElementById('backup-modal-close').addEventListener('click', () => {
-                backupModal.classList.add('hidden');
-                backupModal.classList.remove('flex');
-            });
-
-            document.getElementById('btn-copy-backup').addEventListener('click', () => {
-                const area = document.getElementById('backup-json-area');
-                area.value = JSON.stringify(state);
-                area.select();
-                document.execCommand('copy');
-                showToast('Backup JSON copied to clipboard!', 'cyan');
-            });
-
-            document.getElementById('btn-download-backup').addEventListener('click', () => {
-                const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `jawline-tracker-backup-${new Date().toLocaleDateString('en-CA')}.json`;
-                a.click();
-                URL.revokeObjectURL(url);
-                showToast('Backup file downloaded!', 'emerald');
-            });
-
-            document.getElementById('btn-restore-backup').addEventListener('click', () => {
-                try {
-                    const raw = document.getElementById('backup-json-area').value.trim();
-                    const parsed = JSON.parse(raw);
-                    if (!parsed || typeof parsed !== 'object' || !parsed.rules) {
-                        throw new Error('Invalid backup format');
-                    }
-                    state = {
-                        ...defaultState,
-                        ...parsed,
-                        rules: { ...defaultState.rules, ...(parsed.rules || {}) },
-                        visualCheckIns: Array.isArray(parsed.visualCheckIns) ? parsed.visualCheckIns : []
-                    };
-                    saveState();
-                    renderAll();
-                    backupModal.classList.add('hidden');
-                    backupModal.classList.remove('flex');
-                    showToast('Progress restored successfully!', 'emerald');
-                } catch (err) {
-                    showToast('Invalid JSON backup code. Please check and try again.', 'rose');
-                }
-            });
-
-            // Reset Day Modal Triggers
+            // Clear Date Modal
             const confirmModal = document.getElementById('confirm-modal');
-            document.getElementById('btn-reset-day').addEventListener('click', () => {
+            document.getElementById('btn-clear-date').addEventListener('click', () => {
+                document.getElementById('confirm-modal-desc').textContent = `Clear all logged rules, meals, water, and notes for ${selectedDate}?`;
                 confirmModal.classList.remove('hidden');
                 confirmModal.classList.add('flex');
             });
-
             document.getElementById('modal-cancel').addEventListener('click', () => {
                 confirmModal.classList.add('hidden');
                 confirmModal.classList.remove('flex');
             });
-
             document.getElementById('modal-confirm').addEventListener('click', () => {
-                resetDailyMetrics(true);
+                if (!selectedDate) return;
+                delete store.days[selectedDate];
+                saveStore();
                 confirmModal.classList.add('hidden');
                 confirmModal.classList.remove('flex');
+                renderAll();
+                showToast(`Cleared log for ${selectedDate}`, 'rose');
             });
-        }
 
-        function setupSharpnessSelector() {
-            const buttons = document.querySelectorAll('.sharpness-btn');
-            const hint = document.getElementById('sharpness-label-hint');
-            buttons.forEach(btn => {
+            // Custom Water Preset Toggle & Creation
+            document.getElementById('btn-toggle-water-presets').addEventListener('click', () => {
+                isEditingWaterPresets = !isEditingWaterPresets;
+                const editor = document.getElementById('water-preset-editor');
+                editor.classList.toggle('hidden', !isEditingWaterPresets);
+                document.getElementById('btn-toggle-water-presets').textContent = isEditingWaterPresets ? 'Done editing' : 'Customize presets';
+                renderWaterPresets();
+            });
+
+            document.getElementById('btn-save-water-preset').addEventListener('click', () => {
+                const labelEl = document.getElementById('new-preset-label');
+                const mlEl = document.getElementById('new-preset-ml');
+                const ml = parseInt(mlEl.value, 10);
+                const label = labelEl.value.trim() || `${ml}ml`;
+
+                if (!ml || ml < 10) {
+                    showToast('Enter a valid ml amount (e.g. 600)', 'rose');
+                    return;
+                }
+                store.waterPresets.push({ id: 'wp_' + Date.now(), label, ml });
+                saveStore();
+                labelEl.value = '';
+                mlEl.value = '';
+                renderWaterPresets();
+                showToast(`Added +${ml}ml (${label}) preset!`, 'cyan');
+            });
+
+            // Custom Direct Water Input
+            document.getElementById('btn-add-custom-water').addEventListener('click', () => {
+                const input = document.getElementById('custom-water-input');
+                const ml = parseInt(input.value, 10);
+                if (!ml || ml <= 0) {
+                    showToast('Enter custom ml amount first', 'rose');
+                    return;
+                }
+                adjustWater(ml);
+                input.value = '';
+            });
+
+            // Steps input
+            document.getElementById('steps-input').addEventListener('input', (e) => {
+                if (!selectedDate) return;
+                const day = ensureDayData(selectedDate);
+                day.steps = Math.max(0, parseInt(e.target.value, 10) || 0);
+                if (day.steps >= TARGET_STEPS && day.rules.steps !== 'done') {
+                    day.rules.steps = 'done';
+                    showToast('8,000+ steps hit — marked Done!', 'emerald');
+                }
+                saveStore();
+                renderAll();
+            });
+
+            // Sharpness 1-5 rating buttons
+            document.querySelectorAll('.sharp-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
-                    selectedSharpness = parseInt(btn.getAttribute('data-rating'), 10);
-                    buttons.forEach(b => {
-                        const r = parseInt(b.getAttribute('data-rating'), 10);
-                        if (r === selectedSharpness) {
-                            b.className = 'sharpness-btn py-2 rounded-xl bg-cyan-500/20 border border-cyan-400 text-xs font-bold text-cyan-300 transition';
-                        } else {
-                            b.className = 'sharpness-btn py-2 rounded-xl bg-[#1E1E1E] border border-[#363638] text-xs font-bold text-gray-400 hover:border-gray-500 transition';
-                        }
-                    });
-                    hint.textContent = SHARPNESS_LABELS[selectedSharpness] || '3 — Normal';
+                    if (!selectedDate) return;
+                    const val = parseInt(btn.getAttribute('data-val'), 10);
+                    const day = ensureDayData(selectedDate);
+                    day.sharpness = day.sharpness === val ? null : val; // tap again to unset
+                    saveStore();
+                    renderDayPanel();
+                    renderMonthlyStats();
                 });
             });
+
+            // Fit dropdown, Selfie checkbox, Note input
+            document.getElementById('day-fit-select').addEventListener('change', (e) => {
+                if (!selectedDate) return;
+                const day = ensureDayData(selectedDate);
+                day.fit = e.target.value;
+                saveStore();
+            });
+
+            document.getElementById('day-selfie-check').addEventListener('change', (e) => {
+                if (!selectedDate) return;
+                const day = ensureDayData(selectedDate);
+                day.selfie = e.target.checked;
+                saveStore();
+                renderCalendar();
+            });
+
+            document.getElementById('day-note-input').addEventListener('input', (e) => {
+                if (!selectedDate) return;
+                const day = ensureDayData(selectedDate);
+                day.note = e.target.value;
+                saveStore();
+                renderCalendar();
+            });
+
+            // Meal form
+            document.getElementById('meal-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const nameEl = document.getElementById('meal-name');
+                const calsEl = document.getElementById('meal-cals');
+                const protEl = document.getElementById('meal-prot');
+
+                const name = nameEl.value.trim();
+                const cals = parseInt(calsEl.value, 10);
+                const prot = parseInt(protEl.value, 10);
+
+                if (name && !isNaN(cals) && !isNaN(prot)) {
+                    addMeal(name, cals, prot);
+                    nameEl.value = '';
+                    calsEl.value = '';
+                    protEl.value = '';
+                }
+            });
+
+            // Backup Modal
+            const backupModal = document.getElementById('backup-modal');
+            document.getElementById('btn-open-backup').addEventListener('click', () => {
+                document.getElementById('backup-json-area').value = JSON.stringify(store, null, 2);
+                backupModal.classList.remove('hidden');
+                backupModal.classList.add('flex');
+            });
+            document.getElementById('backup-modal-close').addEventListener('click', () => {
+                backupModal.classList.add('hidden');
+                backupModal.classList.remove('flex');
+            });
+            document.getElementById('btn-copy-backup').addEventListener('click', () => {
+                const area = document.getElementById('backup-json-area');
+                area.value = JSON.stringify(store);
+                area.select();
+                document.execCommand('copy');
+                showToast('Calendar backup copied to clipboard!', 'cyan');
+            });
+            document.getElementById('btn-download-backup').addEventListener('click', () => {
+                const blob = new Blob([JSON.stringify(store, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `jawline-calendar-backup-${todayStr}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+                showToast('Backup file downloaded!', 'emerald');
+            });
+            document.getElementById('btn-restore-backup').addEventListener('click', () => {
+                try {
+                    const parsed = JSON.parse(document.getElementById('backup-json-area').value.trim());
+                    if (!parsed || typeof parsed.days !== 'object') throw new Error('Invalid format');
+                    if (!Array.isArray(parsed.waterPresets)) {
+                        parsed.waterPresets = [...DEFAULT_WATER_PRESETS];
+                    }
+                    store = parsed;
+                    saveStore();
+                    renderAll();
+                    backupModal.classList.add('hidden');
+                    backupModal.classList.remove('flex');
+                    showToast('Calendar history restored!', 'emerald');
+                } catch (err) {
+                    showToast('Invalid JSON backup code.', 'rose');
+                }
+            });
         }
 
-        // --- CORE LOGIC & MUTATIONS ---
-        function toggleRule(ruleKey) {
-            state.rules[ruleKey] = !state.rules[ruleKey];
-            checkStreakCompletion();
-            saveState();
-            renderChecklist();
+        // --- MODAL OPEN / CLOSE & DAY MUTATIONS ---
+        function openDayModal(isoDate) {
+            selectedDate = isoDate;
+            const modal = document.getElementById('day-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            renderAll();
         }
 
-        function addWater(amountMl) {
-            state.waterMl = Math.max(0, state.waterMl + amountMl);
-            if (state.waterMl >= 2500 && !state.rules.water) {
-                state.rules.water = true;
-                showToast('2.5L+ hydration goal hit! Facial bloating reduced.', 'cyan');
+        function closeDayModal() {
+            selectedDate = null;
+            const modal = document.getElementById('day-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            renderCalendar();
+        }
+
+        function removeWaterPreset(presetId) {
+            store.waterPresets = store.waterPresets.filter(p => p.id !== presetId);
+            saveStore();
+            renderWaterPresets();
+        }
+
+        function renderWaterPresets() {
+            const container = document.getElementById('water-presets-grid');
+            if (!container) return;
+            container.innerHTML = store.waterPresets.map(p => `
+                <div class="inline-flex items-center rounded-lg bg-cyan-500/15 border border-cyan-500/30 overflow-hidden">
+                    <button type="button" onclick="adjustWater(${p.ml})" class="px-2.5 py-1.5 hover:bg-cyan-500/25 text-cyan-300 text-xs font-semibold transition">
+                        +${p.ml}ml <span class="text-[10px] text-cyan-200/70">(${escapeHtml(p.label)})</span>
+                    </button>
+                    ${isEditingWaterPresets ? `
+                        <button type="button" onclick="removeWaterPreset('${p.id}')" class="px-1.5 py-1.5 bg-rose-500/20 hover:bg-rose-500/40 text-rose-300 text-[10px] font-bold transition" title="Remove preset">✕</button>
+                    ` : ''}
+                </div>
+            `).join('') + `
+                <button type="button" onclick="adjustWater(-250)" class="px-2.5 py-1.5 rounded-lg bg-[#1E1E1E] hover:bg-[#2D2D30] border border-[#363638] text-gray-400 text-xs transition">-250ml</button>
+            `;
+        }
+
+        function shiftSelectedDate(deltaDays) {
+            if (!selectedDate) return;
+            const dt = parseISODate(selectedDate);
+            dt.setDate(dt.getDate() + deltaDays);
+            selectedDate = toISODate(dt);
+            currentMonthDate = new Date(dt.getFullYear(), dt.getMonth(), 1);
+            renderAll();
+        }
+
+        function setRuleStatus(ruleId, targetStatus) {
+            if (!selectedDate) return;
+            const day = ensureDayData(selectedDate);
+            // Clicking the active status toggles it back to unlogged (null)
+            day.rules[ruleId] = (day.rules[ruleId] === targetStatus) ? null : targetStatus;
+            saveStore();
+            renderAll();
+        }
+
+        function adjustWater(deltaMl) {
+            if (!selectedDate) return;
+            const day = ensureDayData(selectedDate);
+            day.waterMl = Math.max(0, day.waterMl + deltaMl);
+            if (day.waterMl >= 2700 && day.rules.water !== 'done') {
+                day.rules.water = 'done';
+                showToast('2.7L+ water hit — marked Done!', 'cyan');
             }
-            checkStreakCompletion();
-            saveState();
-            renderChecklist();
+            saveStore();
+            renderAll();
         }
 
-        function addSteps(amount) {
-            state.steps = Math.max(0, state.steps + amount);
-            if (state.steps >= TARGET_STEPS && !state.rules.steps) {
-                state.rules.steps = true;
-                showToast('8,000+ steps hit! Great job.', 'emerald');
+        function adjustSteps(deltaSteps) {
+            if (!selectedDate) return;
+            const day = ensureDayData(selectedDate);
+            day.steps = Math.max(0, day.steps + deltaSteps);
+            if (day.steps >= TARGET_STEPS && day.rules.steps !== 'done') {
+                day.rules.steps = 'done';
+                showToast('8,000+ steps hit — marked Done!', 'emerald');
             }
-            checkStreakCompletion();
-            saveState();
-            renderChecklist();
+            saveStore();
+            renderAll();
+        }
+
+        function setExactSteps(exactSteps) {
+            if (!selectedDate) return;
+            const day = ensureDayData(selectedDate);
+            day.steps = Math.max(0, exactSteps);
+            if (day.steps >= TARGET_STEPS && day.rules.steps !== 'done') {
+                day.rules.steps = 'done';
+                showToast(`${exactSteps.toLocaleString()} steps logged — marked Done!`, 'emerald');
+            }
+            saveStore();
+            renderAll();
         }
 
         function addMeal(name, calories, protein) {
-            state.meals.unshift({
+            if (!selectedDate) return;
+            const day = ensureDayData(selectedDate);
+            day.meals.unshift({
                 id: Date.now() + Math.floor(Math.random() * 1000),
                 name,
                 calories: Math.max(0, calories),
                 protein: Math.max(0, protein)
             });
-            evaluateMacroRules();
-            checkStreakCompletion();
-            saveState();
+
+            // Auto-evaluate protein & calorie rules
+            const totalCals = day.meals.reduce((s, m) => s + m.calories, 0);
+            const totalProt = day.meals.reduce((s, m) => s + m.protein, 0);
+
+            if (totalProt >= 140 && day.rules.protein !== 'done') {
+                day.rules.protein = 'done';
+                showToast('140g+ protein hit — marked Done!', 'emerald');
+            }
+            if (totalCals > 2100) {
+                day.rules.calories = 'missed';
+                showToast('Exceeded 2,100 kcal limit — marked Missed.', 'rose');
+            } else if (totalCals >= 1750 && day.rules.calories !== 'done') {
+                day.rules.calories = 'done';
+            }
+
+            saveStore();
             renderAll();
-            showToast(`Logged: ${name}`, 'emerald');
+            showToast(`Added ${name}`, 'emerald');
         }
 
-        function quickAddMeal(name, calories, protein) {
-            addMeal(name, calories, protein);
-        }
-
-        function deleteMeal(id) {
-            state.meals = state.meals.filter(m => m.id !== id);
-            evaluateMacroRules();
-            saveState();
+        function deleteMeal(mealId) {
+            if (!selectedDate) return;
+            const day = ensureDayData(selectedDate);
+            day.meals = day.meals.filter(m => m.id !== mealId);
+            saveStore();
             renderAll();
         }
 
-        function deleteVisualCheckIn(id) {
-            state.visualCheckIns = state.visualCheckIns.filter(c => c.id !== id);
-            saveState();
-            renderVisualCheckIns();
+        function deleteCustomRule(ruleId) {
+            if (store.customRules.length <= 1) {
+                showToast('Keep at least 1 rule active.', 'rose');
+                return;
+            }
+            store.customRules = store.customRules.filter(r => r.id !== ruleId);
+            saveStore();
+            renderCustomRulesModal();
+            renderAll();
         }
 
-        function evaluateMacroRules() {
-            const totalCals = state.meals.reduce((sum, m) => sum + m.calories, 0);
-            const totalProt = state.meals.reduce((sum, m) => sum + m.protein, 0);
-
-            if (totalProt >= 135 && !state.rules.protein) {
-                state.rules.protein = true;
-                showToast('135g+ protein target hit!', 'emerald');
-            }
-            if (totalCals >= 1700 && totalCals <= 2050 && !state.rules.calories) {
-                state.rules.calories = true;
-            } else if (totalCals > 2050 && state.rules.calories) {
-                state.rules.calories = false;
-                showToast('Calorie intake exceeded 2,050 kcal limit.', 'rose');
-            }
-        }
-
-        function checkStreakCompletion() {
-            const todayStr = new Date().toLocaleDateString('en-CA');
-            const completedCount = Object.values(state.rules).filter(Boolean).length;
-            if (completedCount >= 6 && state.lastStreakCompletedDate !== todayStr) {
-                state.streak += 1;
-                state.lastStreakCompletedDate = todayStr;
-                showToast(`Daily streak increased to ${state.streak} day${state.streak === 1 ? '' : 's'}!`, 'emerald');
-            }
+        function renderCustomRulesModal() {
+            const list = document.getElementById('custom-rules-list');
+            if (!list) return;
+            list.innerHTML = getActiveRules().map(r => `
+                <div class="flex items-center justify-between bg-[#1E1E1E] border border-[#363638] rounded-xl px-3 py-2 text-xs">
+                    <div class="pr-2 min-w-0">
+                        <div class="font-semibold text-gray-200 truncate">${escapeHtml(r.title)}</div>
+                        <div class="text-[11px] text-gray-500 truncate">${escapeHtml(r.desc)}</div>
+                    </div>
+                    <button type="button" onclick="deleteCustomRule('${r.id}')" class="text-gray-500 hover:text-rose-400 p-1 transition shrink-0" title="Remove rule">✕</button>
+                </div>
+            `).join('');
         }
 
         // --- RENDER FUNCTIONS ---
         function renderAll() {
-            renderChecklist();
-            renderMacros();
-            renderVisualCheckIns();
+            renderCalendar();
+            renderMonthlyStats();
+            if (selectedDate) {
+                renderDayPanel();
+            }
+            calculateStreak();
         }
 
-        function renderChecklist() {
-            document.getElementById('streak-count').textContent = state.streak;
+        function calculateStreak() {
+            let streak = 0;
+            const cursor = parseISODate(todayStr);
+            const totalRules = getActiveRules().length;
+            const threshold = Math.max(1, Math.ceil(totalRules * 0.75));
 
-            const ruleKeys = Object.keys(state.rules);
-            const completedCount = ruleKeys.filter(k => state.rules[k]).length;
-            const totalRules = ruleKeys.length;
-            const pct = Math.round((completedCount / totalRules) * 100);
+            // Check today first; if today isn't finished yet, start counting backward from yesterday
+            const todayData = getDayData(todayStr);
+            const todayDone = Object.values(todayData.rules).filter(v => v === 'done').length;
+            if (todayDone >= threshold) {
+                streak++;
+            }
+            cursor.setDate(cursor.getDate() - 1);
 
-            document.getElementById('completion-percentage').textContent = `${pct}%`;
-            document.getElementById('completion-fraction').textContent = `${completedCount}/${totalRules} Done`;
-            document.getElementById('checklist-progress-bar').style.width = `${pct}%`;
-
-            // Update each rule row's visual checkbox state
-            ruleKeys.forEach(key => {
-                const row = document.querySelector(`[data-rule="${key}"]`);
-                if (!row) return;
-                const checkbox = row.querySelector('.rule-checkbox');
-                const checkIcon = row.querySelector('.check-icon');
-                const title = row.querySelector('.rule-title');
-                const isChecked = !!state.rules[key];
-
-                if (isChecked) {
-                    row.classList.add('border-emerald-500/40', 'bg-emerald-500/5');
-                    row.classList.remove('border-[#363638]');
-                    checkbox.classList.add('bg-emerald-500', 'border-emerald-500');
-                    checkbox.classList.remove('border-gray-500');
-                    checkIcon.classList.remove('hidden');
-                    title.classList.add('line-through', 'text-gray-400');
-                    title.classList.remove('text-gray-100');
+            while (true) {
+                const iso = toISODate(cursor);
+                const d = store.days[iso];
+                if (!d) break;
+                const doneCount = Object.values(d.rules || {}).filter(v => v === 'done').length;
+                if (doneCount >= threshold) {
+                    streak++;
+                    cursor.setDate(cursor.getDate() - 1);
                 } else {
-                    row.classList.remove('border-emerald-500/40', 'bg-emerald-500/5');
-                    row.classList.add('border-[#363638]');
-                    checkbox.classList.remove('bg-emerald-500', 'border-emerald-500');
-                    checkbox.classList.add('border-gray-500');
-                    checkIcon.classList.add('hidden');
-                    title.classList.remove('line-through', 'text-gray-400');
-                    title.classList.add('text-gray-100');
+                    break;
+                }
+            }
+            document.getElementById('streak-count').textContent = streak;
+        }
+
+        function renderCalendar() {
+            const year = currentMonthDate.getFullYear();
+            const month = currentMonthDate.getMonth();
+            const monthName = currentMonthDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+            document.getElementById('calendar-month-year').textContent = monthName;
+
+            const firstDayOfWeek = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            const grid = document.getElementById('calendar-grid');
+            grid.innerHTML = '';
+
+            // Leading blank cells
+            for (let i = 0; i < firstDayOfWeek; i++) {
+                const blank = document.createElement('div');
+                blank.className = 'h-14 sm:h-16 rounded-xl bg-[#1E1E1E]/40 border border-transparent';
+                grid.appendChild(blank);
+            }
+
+            let loggedDaysCount = 0;
+
+            for (let dayNum = 1; dayNum <= daysInMonth; dayNum++) {
+                const iso = `${year}-${String(month + 1).padStart(2, '0')}-${String(dayNum).padStart(2, '0')}`;
+                const data = store.days[iso];
+                const isSelected = iso === selectedDate;
+                const isToday = iso === todayStr;
+
+                let doneCount = 0;
+                let missedCount = 0;
+                let hasAnyActivity = false;
+
+                if (data) {
+                    const statuses = Object.values(data.rules || {});
+                    doneCount = statuses.filter(s => s === 'done').length;
+                    missedCount = statuses.filter(s => s === 'missed').length;
+                    hasAnyActivity = doneCount > 0 || missedCount > 0 || data.meals.length > 0 || data.waterMl > 0 || data.steps > 0 || data.sharpness !== null || Boolean(data.note);
+                    if (hasAnyActivity) loggedDaysCount++;
+                }
+
+                // Determine cell color accent based on performance
+                let statusDotHtml = '';
+                let cardBgClass = 'bg-[#1E1E1E] hover:bg-[#2D2D30] border-[#363638]';
+
+                if (hasAnyActivity) {
+                    if (doneCount >= 6) {
+                        cardBgClass = 'bg-emerald-500/10 hover:bg-emerald-500/15 border-emerald-500/40';
+                        statusDotHtml = `<span class="text-[10px] font-bold text-emerald-400">${doneCount}/8</span>`;
+                    } else if (missedCount >= 3 || (doneCount === 0 && missedCount > 0)) {
+                        cardBgClass = 'bg-rose-500/10 hover:bg-rose-500/15 border-rose-500/40';
+                        statusDotHtml = `<span class="text-[10px] font-bold text-rose-400">${missedCount} ✕</span>`;
+                    } else if (doneCount > 0 || missedCount > 0) {
+                        cardBgClass = 'bg-amber-500/10 hover:bg-amber-500/15 border-amber-500/40';
+                        statusDotHtml = `<span class="text-[10px] font-bold text-amber-300">${doneCount}/8</span>`;
+                    } else {
+                        statusDotHtml = `<span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>`;
+                    }
+                }
+
+                const selectedRing = isSelected ? 'ring-2 ring-cyan-400 border-cyan-400' : '';
+                const todayBadge = isToday ? '<span class="w-1.5 h-1.5 rounded-full bg-cyan-400 inline-block ml-1" title="Today"></span>' : '';
+
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = `h-16 sm:h-20 rounded-xl border p-2 flex flex-col justify-between items-start text-left transition ${cardBgClass} ${selectedRing}`;
+                btn.innerHTML = `
+                    <div class="w-full flex items-center justify-between">
+                        <span class="text-xs sm:text-sm font-semibold ${isToday ? 'text-cyan-300' : 'text-gray-200'}">${dayNum}${todayBadge}</span>
+                        ${data && data.selfie ? '<span class="text-[10px]" title="Selfie logged">📸</span>' : ''}
+                    </div>
+                    <div class="w-full flex items-center justify-between">
+                        ${statusDotHtml}
+                        ${missedCount > 0 && doneCount >= 6 ? `<span class="text-[9px] text-rose-400 font-semibold">${missedCount}✕</span>` : ''}
+                    </div>
+                `;
+                btn.addEventListener('click', () => {
+                    openDayModal(iso);
+                });
+
+                grid.appendChild(btn);
+            }
+
+            document.getElementById('month-summary-text').textContent = `${loggedDaysCount} day${loggedDaysCount === 1 ? '' : 's'} logged in ${currentMonthDate.toLocaleDateString('en-US', { month: 'long' })} · Click any date to log`;
+        }
+
+        function renderMonthlyStats() {
+            const year = currentMonthDate.getFullYear();
+            const month = currentMonthDate.getMonth();
+            const prefix = `${year}-${String(month + 1).padStart(2, '0')}-`;
+
+            let winningDays = 0;
+            let totalMissedRules = 0;
+            let sharpnessSum = 0;
+            let sharpnessCount = 0;
+
+            Object.entries(store.days).forEach(([iso, day]) => {
+                if (!iso.startsWith(prefix) || !day) return;
+                const statuses = Object.values(day.rules || {});
+                const done = statuses.filter(s => s === 'done').length;
+                const missed = statuses.filter(s => s === 'missed').length;
+                if (done >= 6) winningDays++;
+                totalMissedRules += missed;
+                if (typeof day.sharpness === 'number') {
+                    sharpnessSum += day.sharpness;
+                    sharpnessCount++;
                 }
             });
 
-            // Water UI
-            const liters = (state.waterMl / 1000).toFixed(2);
-            document.getElementById('water-current-text').textContent = liters;
-            const waterPct = Math.min(100, Math.round((state.waterMl / TARGET_WATER_ML) * 100));
-            document.getElementById('water-progress-bar').style.width = `${waterPct}%`;
-
-            // Steps UI
-            document.getElementById('steps-badge').textContent = `${state.steps.toLocaleString()} / 8,000`;
-            const stepsInput = document.getElementById('steps-input');
-            if (document.activeElement !== stepsInput) {
-                stepsInput.value = state.steps > 0 ? state.steps : '';
-            }
-
-            // Workout / Rest Day UI
-            const restToggle = document.getElementById('rest-day-toggle');
-            restToggle.checked = !!state.isRestDay;
-            const workoutTitle = document.getElementById('workout-title-text');
-            const workoutDesc = document.getElementById('workout-desc-text');
-            if (state.isRestDay) {
-                workoutTitle.textContent = 'Active Recovery / Rest Day';
-                workoutDesc.textContent = 'Rest day logged — muscles recover & grow while you stay in deficit.';
-            } else {
-                workoutTitle.textContent = 'Complete Strength Training / Workout';
-                workoutDesc.textContent = 'Signals your body to keep muscle & burn pure fat.';
-            }
+            document.getElementById('stat-winning-days').textContent = winningDays;
+            document.getElementById('stat-missed-rules').textContent = totalMissedRules;
+            document.getElementById('stat-avg-sharpness').textContent = sharpnessCount > 0 ? `${(sharpnessSum / sharpnessCount).toFixed(1)}/5` : '—';
         }
 
-        function renderMacros() {
-            const totalCals = state.meals.reduce((sum, m) => sum + m.calories, 0);
-            const totalProt = state.meals.reduce((sum, m) => sum + m.protein, 0);
+        function renderDayPanel() {
+            if (!selectedDate) return;
+            const day = getDayData(selectedDate);
+            const dt = parseISODate(selectedDate);
 
-            document.getElementById('badge-protein-status').textContent = `${totalProt}g / ${TARGET_PROTEIN}g`;
-            document.getElementById('badge-calorie-status').textContent = `${totalCals.toLocaleString()} / ${TARGET_CALORIES.toLocaleString()} kcal`;
+            // Header Info
+            document.getElementById('selected-date-title').textContent = dt.toLocaleDateString('en-US', {
+                weekday: 'long', month: 'short', day: 'numeric', year: 'numeric'
+            });
+            document.getElementById('selected-date-iso').textContent = selectedDate;
 
-            const calsLeft = TARGET_CALORIES - totalCals;
-            const protLeft = Math.max(0, TARGET_PROTEIN - totalProt);
-
-            document.getElementById('cal-consumed-label').textContent = `${totalCals.toLocaleString()} / ${TARGET_CALORIES.toLocaleString()}`;
-            const calRemEl = document.getElementById('cal-remaining-val');
-            calRemEl.textContent = calsLeft >= 0 ? calsLeft.toLocaleString() : `${Math.abs(calsLeft)} over`;
-            calRemEl.className = calsLeft >= 0 ? 'text-2xl font-bold text-cyan-400' : 'text-2xl font-bold text-rose-400';
-
-            const calPct = Math.min(100, Math.round((totalCals / TARGET_CALORIES) * 100));
-            const calBar = document.getElementById('cal-bar');
-            calBar.style.width = `${calPct}%`;
-            calBar.className = calsLeft >= 0 ? 'h-full bg-cyan-400 progress-fill rounded-full' : 'h-full bg-rose-500 progress-fill rounded-full';
-
-            document.getElementById('prot-consumed-label').textContent = `${totalProt} / ${TARGET_PROTEIN}g`;
-            const protRemEl = document.getElementById('prot-remaining-val');
-            protRemEl.textContent = protLeft > 0 ? `${protLeft}g` : 'Goal Hit!';
-
-            const protPct = Math.min(100, Math.round((totalProt / TARGET_PROTEIN) * 100));
-            document.getElementById('prot-bar').style.width = `${protPct}%`;
-
-            // Render Meal List
-            document.getElementById('meal-count').textContent = state.meals.length;
-            const mealsList = document.getElementById('meals-list');
-            if (state.meals.length === 0) {
-                mealsList.innerHTML = `<p class="text-xs text-gray-500 italic text-center py-3">No meals logged yet today.</p>`;
+            const badge = document.getElementById('selected-date-badge');
+            if (selectedDate === todayStr) {
+                badge.textContent = 'TODAY';
+                badge.className = 'px-2 py-0.5 rounded-md text-[11px] font-bold bg-cyan-500/15 text-cyan-300 border border-cyan-500/30';
+            } else if (selectedDate < todayStr) {
+                badge.textContent = 'PAST LOG';
+                badge.className = 'px-2 py-0.5 rounded-md text-[11px] font-bold bg-gray-500/15 text-gray-300 border border-gray-500/30';
             } else {
-                mealsList.innerHTML = state.meals.map(meal => `
+                badge.textContent = 'UPCOMING';
+                badge.className = 'px-2 py-0.5 rounded-md text-[11px] font-bold bg-amber-500/15 text-amber-300 border border-amber-500/30';
+            }
+
+            // Score Counts
+            const activeRules = getActiveRules();
+            const totalRules = activeRules.length;
+            const statuses = activeRules.map(r => day.rules[r.id]);
+            const doneCount = statuses.filter(s => s === 'done').length;
+            const missedCount = statuses.filter(s => s === 'missed').length;
+            const pendingCount = Math.max(0, totalRules - doneCount - missedCount);
+            const donePct = totalRules > 0 ? Math.round((doneCount / totalRules) * 100) : 0;
+            const missedPct = totalRules > 0 ? Math.round((missedCount / totalRules) * 100) : 0;
+
+            document.getElementById('day-done-count').textContent = doneCount;
+            document.getElementById('day-missed-count').textContent = missedCount;
+            document.getElementById('day-pending-count').textContent = pendingCount;
+            document.getElementById('day-score-pct').textContent = `${donePct}% Achieved`;
+            document.getElementById('bar-done').style.width = `${donePct}%`;
+            document.getElementById('bar-missed').style.width = `${missedPct}%`;
+
+            // Render Rules with Done / Missed buttons
+            const rulesContainer = document.getElementById('rules-container');
+            rulesContainer.innerHTML = activeRules.map(rule => {
+                const status = day.rules[rule.id]; // 'done' | 'missed' | null
+
+                let rowStyle = 'bg-[#1E1E1E] border-[#363638]';
+                let titleStyle = 'text-gray-100';
+                if (status === 'done') {
+                    rowStyle = 'bg-emerald-500/10 border-emerald-500/40';
+                    titleStyle = 'text-emerald-200';
+                } else if (status === 'missed') {
+                    rowStyle = 'bg-rose-500/10 border-rose-500/40';
+                    titleStyle = 'text-rose-200';
+                }
+
+                const doneBtnStyle = status === 'done'
+                    ? 'bg-emerald-500 text-[#1E1E1E] border-emerald-400 font-bold shadow-sm'
+                    : 'bg-[#252526] hover:bg-emerald-500/20 text-gray-400 hover:text-emerald-300 border-[#363638]';
+
+                const missedBtnStyle = status === 'missed'
+                    ? 'bg-rose-500 text-white border-rose-400 font-bold shadow-sm'
+                    : 'bg-[#252526] hover:bg-rose-500/20 text-gray-400 hover:text-rose-300 border-[#363638]';
+
+                return `
+                    <div class="flex items-center justify-between gap-3 p-3 rounded-xl border transition ${rowStyle}">
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs sm:text-sm font-semibold ${titleStyle}">${rule.title}</div>
+                            <div class="text-[11px] text-gray-400 truncate">${rule.desc}</div>
+                        </div>
+                        <div class="flex items-center gap-1.5 shrink-0">
+                            <button type="button" onclick="setRuleStatus('${rule.id}', 'done')" class="status-btn px-2.5 py-1.5 rounded-lg border text-xs flex items-center gap-1 ${doneBtnStyle}" title="Mark as Achieved">
+                                <span>✓</span>
+                                <span class="hidden sm:inline">Done</span>
+                            </button>
+                            <button type="button" onclick="setRuleStatus('${rule.id}', 'missed')" class="status-btn px-2.5 py-1.5 rounded-lg border text-xs flex items-center gap-1 ${missedBtnStyle}" title="Mark as Not Achieved / Missed">
+                                <span>✕</span>
+                                <span class="hidden sm:inline">Missed</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Hydration & Steps
+            document.getElementById('water-display').textContent = (day.waterMl / 1000).toFixed(2);
+            document.getElementById('water-bar').style.width = `${Math.min(100, Math.round((day.waterMl / TARGET_WATER_ML) * 100))}%`;
+            renderWaterPresets();
+
+            document.getElementById('steps-display').textContent = `${day.steps.toLocaleString()} / 8,000`;
+            const stepsInput = document.getElementById('steps-input');
+            if (document.activeElement !== stepsInput) {
+                stepsInput.value = day.steps > 0 ? day.steps : '';
+            }
+
+            // Visual & Jawline Check-in
+            document.getElementById('sharpness-hint').textContent = day.sharpness ? SHARPNESS_TEXT[day.sharpness] : 'Not rated';
+            document.querySelectorAll('.sharp-btn').forEach(btn => {
+                const v = parseInt(btn.getAttribute('data-val'), 10);
+                if (v === day.sharpness) {
+                    btn.className = 'sharp-btn py-1.5 rounded-lg bg-cyan-500/25 border border-cyan-400 text-xs font-bold text-cyan-300 transition';
+                } else {
+                    btn.className = 'sharp-btn py-1.5 rounded-lg bg-[#1E1E1E] border border-[#363638] text-xs font-bold text-gray-400 hover:border-gray-500 transition';
+                }
+            });
+
+            document.getElementById('day-fit-select').value = day.fit || '';
+            document.getElementById('day-selfie-check').checked = !!day.selfie;
+            const noteInput = document.getElementById('day-note-input');
+            if (document.activeElement !== noteInput) {
+                noteInput.value = day.note || '';
+            }
+
+            // Meals & Macros
+            const totalCals = day.meals.reduce((s, m) => s + m.calories, 0);
+            const totalProt = day.meals.reduce((s, m) => s + m.protein, 0);
+
+            document.getElementById('macro-cals-summary').textContent = `${totalCals.toLocaleString()} / ${TARGET_CALORIES.toLocaleString()} kcal`;
+            document.getElementById('macro-cals-summary').className = totalCals > 2100 ? 'font-bold text-rose-400' : 'font-bold text-cyan-400';
+            document.getElementById('macro-prot-summary').textContent = `${totalProt} / ${TARGET_PROTEIN}g protein`;
+
+            const mealsList = document.getElementById('meals-list');
+            if (day.meals.length === 0) {
+                mealsList.innerHTML = `<p class="text-xs text-gray-500 italic text-center py-3">No meals logged for ${selectedDate}.</p>`;
+            } else {
+                mealsList.innerHTML = day.meals.map(meal => `
                     <div class="flex items-center justify-between bg-[#1E1E1E] border border-[#363638] rounded-xl px-3 py-2 text-xs">
                         <div class="truncate pr-2">
-                            <span class="font-medium text-gray-200 block truncate">${escapeHtml(meal.name)}</span>
-                            <span class="text-gray-400">${meal.calories} kcal · <span class="text-emerald-400 font-medium">${meal.protein}g protein</span></span>
+                            <span class="font-medium text-gray-200">${escapeHtml(meal.name)}</span>
+                            <span class="text-gray-400 ml-2">${meal.calories} kcal · <span class="text-emerald-400 font-medium">${meal.protein}g P</span></span>
                         </div>
-                        <button onclick="deleteMeal(${meal.id})" class="text-gray-500 hover:text-rose-400 p-1 transition shrink-0" title="Remove meal">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        <button type="button" onclick="deleteMeal(${meal.id})" class="text-gray-500 hover:text-rose-400 p-1 transition shrink-0" title="Remove meal">
+                            ✕
                         </button>
                     </div>
                 `).join('');
             }
-        }
-
-        function renderVisualCheckIns() {
-            const badge = document.getElementById('latest-sharpness-badge');
-            const list = document.getElementById('visual-history-list');
-
-            if (state.visualCheckIns.length === 0) {
-                badge.textContent = 'No logs yet';
-                list.innerHTML = `<p class="text-xs text-gray-500 italic text-center py-2">Log your first visual &amp; clothing fit check-in above.</p>`;
-                return;
-            }
-
-            const latest = state.visualCheckIns[0];
-            badge.textContent = `Sharpness: ${latest.sharpness}/5`;
-
-            list.innerHTML = state.visualCheckIns.map(item => `
-                <div class="flex items-start justify-between bg-[#1E1E1E] border border-[#363638] rounded-xl px-3 py-2 text-xs">
-                    <div class="space-y-0.5 pr-2">
-                        <div class="flex flex-wrap items-center gap-1.5">
-                            <span class="font-semibold text-gray-200">${escapeHtml(item.date)}</span>
-                            <span class="px-1.5 py-0.5 rounded bg-cyan-500/15 text-cyan-300 font-medium">Sharpness ${item.sharpness}/5</span>
-                            <span class="px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-300 font-medium">Fit: ${escapeHtml(item.fit)}</span>
-                            ${item.selfie ? `<span class="px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-300 font-medium">📸 Selfie</span>` : ''}
-                        </div>
-                        ${item.note ? `<p class="text-gray-400">${escapeHtml(item.note)}</p>` : ''}
-                    </div>
-                    <button onclick="deleteVisualCheckIn(${item.id})" class="text-gray-500 hover:text-rose-400 p-1 transition shrink-0" title="Remove entry">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                    </button>
-                </div>
-            `).join('');
         }
 
         // --- UTILITIES ---
@@ -1138,14 +1351,11 @@
             toast.textContent = message;
             container.appendChild(toast);
 
-            requestAnimationFrame(() => {
-                toast.classList.remove('translate-y-2', 'opacity-0');
-            });
-
+            requestAnimationFrame(() => toast.classList.remove('translate-y-2', 'opacity-0'));
             setTimeout(() => {
                 toast.classList.add('translate-y-2', 'opacity-0');
                 setTimeout(() => toast.remove(), 300);
-            }, 2800);
+            }, 2600);
         }
     </script>
 </body>
