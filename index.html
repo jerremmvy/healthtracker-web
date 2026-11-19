@@ -20,7 +20,7 @@
                     }
                 }
             }
-        }
+        };
     </script>
     <style>
         body {
@@ -59,11 +59,11 @@
     <!-- Toast Notification Container -->
     <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
-    <!-- Custom Confirmation Modal -->
+    <!-- Custom Confirmation Modal (Clear Date) -->
     <div id="confirm-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-sm p-4">
         <div class="bg-[#252526] border border-[#363638] rounded-2xl max-w-sm w-full p-6 shadow-2xl">
             <h3 class="text-lg font-semibold text-white mb-2">Clear This Date's Log?</h3>
-            <p id="confirm-modal-desc" class="text-sm text-gray-400 mb-6">This will reset all rule statuses, meals, water, steps, and notes for the selected date.</p>
+            <p id="confirm-modal-desc" class="text-sm text-gray-400 mb-6">This will reset all rule statuses, meals, workouts, water, steps, and notes for the selected date.</p>
             <div class="flex justify-end gap-3">
                 <button type="button" id="modal-cancel" class="px-4 py-2 rounded-xl text-sm font-medium text-gray-300 bg-[#2D2D30] hover:bg-[#38383C] transition">Cancel</button>
                 <button type="button" id="modal-confirm" class="px-4 py-2 rounded-xl text-sm font-medium text-white bg-rose-600 hover:bg-rose-500 transition">Clear Date</button>
@@ -129,7 +129,7 @@
     <!-- Main App Container -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 pt-5 sm:pt-7">
 
-        <!-- TOP NAVIGATION BAR -->
+        <!-- 1. TOP NAVIGATION BAR -->
         <header class="bg-[#252526] border border-[#363638] rounded-2xl p-4 sm:p-5 mb-6 shadow-lg">
             <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                 <div class="flex items-center gap-3.5">
@@ -185,7 +185,7 @@
             </div>
         </header>
 
-        <!-- MAIN WORKSPACE: FULL-WIDTH CALENDAR VIEW -->
+        <!-- 2. MAIN WORKSPACE: FULL-WIDTH CALENDAR VIEW -->
         <div class="max-w-4xl mx-auto space-y-6">
             <section class="bg-[#252526] border border-[#363638] rounded-2xl p-5 sm:p-6 shadow-lg">
                 <!-- Month Navigation Header -->
@@ -267,19 +267,19 @@
             </section>
         </div>
 
-        <!-- DAY INSPECTOR & LOGGING MODAL (APPEARS ONLY WHEN A DAY IS CLICKED) -->
+        <!-- 3. DAY INSPECTOR & LOGGING MODAL (APPEARS WHEN ANY DAY IS CLICKED) -->
         <div id="day-modal" class="fixed inset-0 z-40 hidden items-start sm:items-center justify-center bg-black/80 backdrop-blur-sm p-2 sm:p-4 overflow-y-auto">
             <div class="bg-[#1E1E1E] border border-[#363638] rounded-2xl max-w-3xl w-full my-4 sm:my-8 shadow-2xl overflow-hidden">
-                
+
                 <!-- Modal Sticky Header -->
                 <div class="bg-[#252526] px-5 py-4 border-b border-[#363638] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div>
                         <div class="flex items-center gap-2">
                             <span id="selected-date-badge" class="px-2 py-0.5 rounded-md text-[11px] font-bold bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">TODAY</span>
-                            <span id="selected-date-iso" class="text-xs font-mono text-gray-400">2026-11-19</span>
+                            <span id="selected-date-iso" class="text-xs font-mono text-gray-400">2026-11-20</span>
                         </div>
                         <h2 id="selected-date-title" class="text-lg sm:text-xl font-bold text-white mt-1">
-                            Thursday, Nov 19, 2026
+                            Friday, Nov 20, 2026
                         </h2>
                     </div>
 
@@ -302,7 +302,7 @@
                 <!-- Modal Scrollable Body -->
                 <div class="p-4 sm:p-6 space-y-6 max-h-[82vh] overflow-y-auto">
 
-                    <!-- Day Score Summary & 8 Rules -->
+                    <!-- Day Score Summary & Daily Rules -->
                     <section class="bg-[#252526] border border-[#363638] rounded-2xl p-4 sm:p-5">
                         <div class="flex flex-wrap items-center justify-between gap-2 text-xs mb-2.5">
                             <span class="text-gray-300 font-medium">
@@ -325,9 +325,9 @@
                         </div>
                     </section>
 
-                    <!-- DAILY NUMBERS: HYDRATION (WITH CUSTOM BUTTONS) & STEPS -->
+                    <!-- DAILY NUMBERS: HYDRATION & STEPS / VISUAL CHECK-IN -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        
+
                         <!-- Custom Hydration Controls Card -->
                         <section class="bg-[#252526] border border-[#363638] rounded-2xl p-4 sm:p-5 space-y-3.5">
                             <div class="flex items-center justify-between">
@@ -379,10 +379,10 @@
                                     <span id="steps-display" class="font-bold text-emerald-400">0 / 8,000</span>
                                 </div>
                                 <div class="flex gap-1.5 mb-1.5">
-                                    <button type="button" onclick="adjustSteps(1000)" class="flex-1 py-1 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 text-[11px] font-semibold transition">+1k</button>
-                                    <button type="button" onclick="adjustSteps(2500)" class="flex-1 py-1 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 text-[11px] font-semibold transition">+2.5k</button>
-                                    <button type="button" onclick="setExactSteps(8000)" class="flex-1 py-1 rounded-lg bg-[#1E1E1E] hover:bg-[#2D2D30] border border-[#363638] text-gray-300 text-[11px] font-semibold transition">Set 8k</button>
-                                    <button type="button" onclick="setExactSteps(10000)" class="flex-1 py-1 rounded-lg bg-[#1E1E1E] hover:bg-[#2D2D30] border border-[#363638] text-gray-300 text-[11px] font-semibold transition">Set 10k</button>
+                                    <button type="button" data-step-delta="1000" class="flex-1 py-1 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 text-[11px] font-semibold transition">+1k</button>
+                                    <button type="button" data-step-delta="2500" class="flex-1 py-1 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 text-[11px] font-semibold transition">+2.5k</button>
+                                    <button type="button" data-step-exact="8000" class="flex-1 py-1 rounded-lg bg-[#1E1E1E] hover:bg-[#2D2D30] border border-[#363638] text-gray-300 text-[11px] font-semibold transition">Set 8k</button>
+                                    <button type="button" data-step-exact="10000" class="flex-1 py-1 rounded-lg bg-[#1E1E1E] hover:bg-[#2D2D30] border border-[#363638] text-gray-300 text-[11px] font-semibold transition">Set 10k</button>
                                 </div>
                                 <input type="number" id="steps-input" min="0" max="100000" step="500" placeholder="Or type exact steps..." class="w-full bg-[#1E1E1E] border border-[#363638] focus:border-emerald-500 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none">
                             </div>
@@ -423,45 +423,103 @@
                         </section>
                     </div>
 
-                    <!-- MEAL & MACRO LOGGER FOR SELECTED DATE -->
+                    <!-- MEALS, MACROS & WORKOUT BURN ('-KCAL' MINUSER) FOR SELECTED DATE -->
                     <section class="bg-[#252526] border border-[#363638] rounded-2xl p-4 sm:p-5">
-                        <div class="flex flex-wrap items-center justify-between gap-2 mb-3.5">
+                        <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
                             <h3 class="text-sm font-bold text-white flex items-center gap-2">
                                 <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-                                Meals &amp; Macros
+                                Meals, Macros &amp; Burn Minuser
                             </h3>
-                            <div class="flex items-center gap-2 text-xs">
+                            <div class="flex flex-wrap items-center gap-2 text-xs">
+                                <label class="flex items-center gap-1.5 bg-[#1E1E1E] border border-[#363638] rounded-lg px-2.5 py-1 text-[11px] text-gray-300 cursor-pointer select-none" title="Deduct burned workout calories from your 2,000 kcal budget">
+                                    <input type="checkbox" id="deduct-burn-checkbox" checked class="rounded accent-amber-500">
+                                    <span>Deduct burn from budget</span>
+                                </label>
                                 <button type="button" id="btn-copy-prev-meals" class="px-2.5 py-1 rounded-lg bg-[#1E1E1E] hover:bg-[#2D2D30] border border-[#363638] text-cyan-400 text-[11px] font-medium transition" title="Copy meals from the day before">
                                     Copy Prev Day Meals
                                 </button>
-                                <span id="macro-cals-summary" class="font-bold text-cyan-400">0 / 2,000 kcal</span>
-                                <span class="text-gray-500">|</span>
-                                <span id="macro-prot-summary" class="font-bold text-emerald-400">0 / 150g P</span>
                             </div>
                         </div>
 
-                        <!-- Meal Input Row -->
-                        <form id="meal-form" class="grid grid-cols-1 sm:grid-cols-12 gap-2 mb-3">
-                            <input type="text" id="meal-name" placeholder="Food / Meal name" required class="sm:col-span-5 bg-[#1E1E1E] border border-[#363638] focus:border-cyan-500 rounded-xl px-3 py-2 text-xs text-white placeholder-gray-500 focus:outline-none">
-                            <input type="number" id="meal-cals" min="0" max="5000" placeholder="kcal" required class="sm:col-span-2 bg-[#1E1E1E] border border-[#363638] focus:border-cyan-500 rounded-xl px-3 py-2 text-xs text-white placeholder-gray-500 focus:outline-none">
-                            <input type="number" id="meal-prot" min="0" max="500" placeholder="Protein (g)" required class="sm:col-span-2 bg-[#1E1E1E] border border-[#363638] focus:border-emerald-500 rounded-xl px-3 py-2 text-xs text-white placeholder-gray-500 focus:outline-none">
-                            <button type="submit" class="sm:col-span-3 py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition">
-                                + Log Meal
-                            </button>
-                        </form>
-
-                        <!-- Quick Add Staples -->
-                        <div class="flex flex-wrap gap-1.5 mb-3.5">
-                            <button type="button" onclick="addMeal('200g Chicken Breast/Thigh', 330, 45)" class="text-[11px] px-2.5 py-1 rounded-lg bg-[#1E1E1E] hover:bg-[#2D2D30] border border-[#363638] text-gray-300 transition">+ 200g Chicken (330/45g)</button>
-                            <button type="button" onclick="addMeal('3 Whole Eggs', 210, 18)" class="text-[11px] px-2.5 py-1 rounded-lg bg-[#1E1E1E] hover:bg-[#2D2D30] border border-[#363638] text-gray-300 transition">+ 3 Eggs (210/18g)</button>
-                            <button type="button" onclick="addMeal('Greek Yogurt Bowl', 180, 25)" class="text-[11px] px-2.5 py-1 rounded-lg bg-[#1E1E1E] hover:bg-[#2D2D30] border border-[#363638] text-gray-300 transition">+ Yogurt (180/25g)</button>
-                            <button type="button" onclick="addMeal('Whey Scoop', 120, 25)" class="text-[11px] px-2.5 py-1 rounded-lg bg-[#1E1E1E] hover:bg-[#2D2D30] border border-[#363638] text-gray-300 transition">+ Whey (120/25g)</button>
-                            <button type="button" onclick="addMeal('Salmon & Rice Bowl', 560, 40)" class="text-[11px] px-2.5 py-1 rounded-lg bg-[#1E1E1E] hover:bg-[#2D2D30] border border-[#363638] text-gray-300 transition">+ Salmon Bowl (560/40g)</button>
+                        <!-- 4-Metric Live Summary Strip -->
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 bg-[#1E1E1E] border border-[#363638] rounded-xl p-2.5 mb-3.5 text-center">
+                            <div>
+                                <span class="block text-[10px] uppercase tracking-wider text-gray-400">Eaten</span>
+                                <span id="macro-eaten-summary" class="text-xs sm:text-sm font-bold text-gray-100">0 kcal</span>
+                            </div>
+                            <div class="sm:border-l border-[#363638]">
+                                <span class="block text-[10px] uppercase tracking-wider text-amber-400">Burned</span>
+                                <span id="macro-burned-summary" class="text-xs sm:text-sm font-bold text-amber-400">-0 kcal</span>
+                            </div>
+                            <div class="sm:border-l border-[#363638]">
+                                <span class="block text-[10px] uppercase tracking-wider text-cyan-400">Net Budget</span>
+                                <span id="macro-cals-summary" class="text-xs sm:text-sm font-bold text-cyan-400">0 / 2,000</span>
+                            </div>
+                            <div class="sm:border-l border-[#363638]">
+                                <span class="block text-[10px] uppercase tracking-wider text-emerald-400">Protein</span>
+                                <span id="macro-prot-summary" class="text-xs sm:text-sm font-bold text-emerald-400">0 / 150g</span>
+                            </div>
                         </div>
 
-                        <!-- Logged Meals List -->
-                        <div id="meals-list" class="space-y-2 max-h-40 overflow-y-auto pr-1">
-                            <!-- Rendered via JS -->
+                        <!-- Dual-Panel Grid: Meal Logger + Workout Burn (-kcal) Minuser -->
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+                            <!-- Panel A: Meal Logger -->
+                            <div class="bg-[#1E1E1E] border border-[#363638] rounded-xl p-3.5 flex flex-col">
+                                <span class="text-xs font-bold text-emerald-400 mb-2 flex items-center gap-1.5">
+                                    <span>+ Food &amp; Protein Intake</span>
+                                </span>
+
+                                <form id="meal-form" class="grid grid-cols-12 gap-1.5 mb-2.5">
+                                    <input type="text" id="meal-name" placeholder="Food / Meal name" required class="col-span-6 bg-[#252526] border border-[#363638] focus:border-cyan-500 rounded-lg px-2.5 py-1.5 text-xs text-white placeholder-gray-500 focus:outline-none">
+                                    <input type="number" id="meal-cals" min="0" max="5000" placeholder="kcal" required class="col-span-3 bg-[#252526] border border-[#363638] focus:border-cyan-500 rounded-lg px-2 py-1.5 text-xs text-white placeholder-gray-500 focus:outline-none">
+                                    <input type="number" id="meal-prot" min="0" max="500" placeholder="Prot (g)" required class="col-span-3 bg-[#252526] border border-[#363638] focus:border-emerald-500 rounded-lg px-2 py-1.5 text-xs text-white placeholder-gray-500 focus:outline-none">
+                                    <button type="submit" class="col-span-12 py-1.5 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition">
+                                        + Log Meal
+                                    </button>
+                                </form>
+
+                                <!-- Quick Add Protein Staples -->
+                                <div class="flex flex-wrap gap-1 mb-2.5">
+                                    <button type="button" data-staple-name="200g Chicken Breast/Thigh" data-staple-cals="330" data-staple-prot="45" class="staple-btn text-[10px] px-2 py-1 rounded-md bg-[#252526] hover:bg-[#2D2D30] border border-[#363638] text-gray-300 transition">+ 200g Chicken (330/45g)</button>
+                                    <button type="button" data-staple-name="3 Whole Eggs" data-staple-cals="210" data-staple-prot="18" class="staple-btn text-[10px] px-2 py-1 rounded-md bg-[#252526] hover:bg-[#2D2D30] border border-[#363638] text-gray-300 transition">+ 3 Eggs (210/18g)</button>
+                                    <button type="button" data-staple-name="Greek Yogurt Bowl" data-staple-cals="180" data-staple-prot="25" class="staple-btn text-[10px] px-2 py-1 rounded-md bg-[#252526] hover:bg-[#2D2D30] border border-[#363638] text-gray-300 transition">+ Yogurt (180/25g)</button>
+                                    <button type="button" data-staple-name="Whey Scoop" data-staple-cals="120" data-staple-prot="25" class="staple-btn text-[10px] px-2 py-1 rounded-md bg-[#252526] hover:bg-[#2D2D30] border border-[#363638] text-gray-300 transition">+ Whey (120/25g)</button>
+                                    <button type="button" data-staple-name="Salmon & Rice Bowl" data-staple-cals="560" data-staple-prot="40" class="staple-btn text-[10px] px-2 py-1 rounded-md bg-[#252526] hover:bg-[#2D2D30] border border-[#363638] text-gray-300 transition">+ Salmon Bowl (560/40g)</button>
+                                </div>
+
+                                <div id="meals-list" class="space-y-1.5 max-h-36 overflow-y-auto pr-1 flex-1">
+                                    <!-- Rendered via JS -->
+                                </div>
+                            </div>
+
+                            <!-- Panel B: Workout & Cardio Burn (-kcal Minuser) -->
+                            <div class="bg-[#1E1E1E] border border-[#363638] rounded-xl p-3.5 flex flex-col">
+                                <span class="text-xs font-bold text-amber-400 mb-2 flex items-center gap-1.5">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                                    <span>- Workout &amp; Cardio Burn (-kcal Minuser)</span>
+                                </span>
+
+                                <form id="workout-burn-form" class="grid grid-cols-12 gap-1.5 mb-2.5">
+                                    <input type="text" id="workout-name" placeholder="Activity (e.g., Push Day, Run)" required class="col-span-7 bg-[#252526] border border-[#363638] focus:border-amber-500 rounded-lg px-2.5 py-1.5 text-xs text-white placeholder-gray-500 focus:outline-none">
+                                    <input type="number" id="workout-cals" min="1" max="3000" placeholder="Burned kcal" required class="col-span-5 bg-[#252526] border border-[#363638] focus:border-amber-500 rounded-lg px-2 py-1.5 text-xs text-white placeholder-gray-500 focus:outline-none">
+                                    <button type="submit" class="col-span-12 py-1.5 px-3 rounded-lg bg-amber-600 hover:bg-amber-500 text-white text-xs font-semibold transition">
+                                        - Deduct Burned Calories
+                                    </button>
+                                </form>
+
+                                <!-- Quick-Add Burn Presets -->
+                                <div class="flex flex-wrap gap-1 mb-2.5">
+                                    <button type="button" data-burn-name="Lifting Session" data-burn-cals="150" class="burn-preset-btn text-[10px] px-2 py-1 rounded-md bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-300 font-semibold transition">-150 Lifting</button>
+                                    <button type="button" data-burn-name="Cardio Session" data-burn-cals="250" class="burn-preset-btn text-[10px] px-2 py-1 rounded-md bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-300 font-semibold transition">-250 Cardio</button>
+                                    <button type="button" data-burn-name="Incline Walk" data-burn-cals="300" class="burn-preset-btn text-[10px] px-2 py-1 rounded-md bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-300 font-semibold transition">-300 Incline Walk</button>
+                                </div>
+
+                                <div id="workouts-list" class="space-y-1.5 max-h-36 overflow-y-auto pr-1 flex-1">
+                                    <!-- Rendered via JS -->
+                                </div>
+                            </div>
+
                         </div>
                     </section>
 
@@ -471,148 +529,704 @@
     </div>
 
     <script>
-        // --- CONFIGURATION & RULE DEFINITIONS ---
-        const STORAGE_KEY = 'jawline_calendar_tracker_v3';
-        const TARGET_CALORIES = 2000;
-        const TARGET_PROTEIN = 150;
-        const TARGET_WATER_ML = 2850;
-        const TARGET_STEPS = 8000;
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- CONFIGURATION & RULE DEFINITIONS ---
+            const STORAGE_KEY = 'jawline_calendar_tracker_v3';
+            const TARGET_CALORIES = 2000;
+            const TARGET_PROTEIN = 150;
+            const TARGET_WATER_ML = 2850;
+            const TARGET_STEPS = 8000;
 
-        const SHARPNESS_TEXT = {
-            1: '1/5 · Very Puffy',
-            2: '2/5 · Soft / Retaining',
-            3: '3/5 · Normal',
-            4: '4/5 · Defined',
-            5: '5/5 · Razor Sharp'
-        };
-
-        const DEFAULT_WATER_PRESETS = [
-            { id: 'w1', label: 'Cup', ml: 250 },
-            { id: 'w2', label: 'Bottle', ml: 500 },
-            { id: 'w3', label: 'Large', ml: 750 },
-            { id: 'w4', label: '1L Jug', ml: 1000 }
-        ];
-
-        // Rule status values: null (unlogged), 'done' (achieved), 'missed' (did not achieve)
-        const DEFAULT_RULES_CONFIG = [
-            { id: 'protein', title: 'Hit 140g–165g Protein', desc: 'Preserves lean muscle & controls hunger at 77kg.' },
-            { id: 'calories', title: 'Stay in 1,950–2,050 kcal', desc: '~450 kcal daily deficit for steady fat loss.' },
-            { id: 'liquidCalories', title: 'Zero Liquid Calories', desc: 'No sugary drinks, bubble tea, juices, or alcohol.' },
-            { id: 'lowSodium', title: 'Low Sodium & Clean Sauces', desc: 'Avoid fast food & heavy sauces to prevent cheek puffiness.' },
-            { id: 'water', title: 'Drink 2.7L–3.0L Water', desc: 'Flushes sodium & tightens facial water retention.' },
-            { id: 'steps', title: 'Hit 8,000–10,000 Steps', desc: 'Daily low-stress fat burn.' },
-            { id: 'workout', title: 'Workout / Planned Rest Day', desc: 'Strength training or intentional recovery day.' },
-            { id: 'sleep', title: 'Sleep 7+ Hours', desc: 'Keeps cortisol & morning water retention low.' }
-        ];
-
-        function toISODate(dt) {
-            const y = dt.getFullYear();
-            const m = String(dt.getMonth() + 1).padStart(2, '0');
-            const d = String(dt.getDate()).padStart(2, '0');
-            return `${y}-${m}-${d}`;
-        }
-
-        function parseISODate(isoStr) {
-            const [y, m, d] = isoStr.split('-').map(Number);
-            return new Date(y, m - 1, d);
-        }
-
-        // --- APP STATE ---
-        const todayStr = toISODate(new Date());
-        let currentMonthDate = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
-        let selectedDate = null;
-        let isEditingWaterPresets = false;
-        let store = loadStore();
-
-        function getActiveRules() {
-            return Array.isArray(store.customRules) && store.customRules.length > 0
-                ? store.customRules
-                : DEFAULT_RULES_CONFIG;
-        }
-
-        function createEmptyDay() {
-            const rules = {};
-            getActiveRules().forEach(r => { rules[r.id] = null; });
-            return {
-                rules,
-                waterMl: 0,
-                steps: 0,
-                meals: [],
-                sharpness: null,
-                fit: '',
-                selfie: false,
-                note: ''
+            const SHARPNESS_TEXT = {
+                1: '1/5 · Very Puffy',
+                2: '2/5 · Soft / Retaining',
+                3: '3/5 · Normal',
+                4: '4/5 · Defined',
+                5: '5/5 · Razor Sharp'
             };
-        }
 
-        function getDayData(dateStr) {
-            if (!store.days[dateStr]) {
-                return createEmptyDay();
+            const DEFAULT_WATER_PRESETS = [
+                { id: 'w1', label: 'Cup', ml: 250 },
+                { id: 'w2', label: 'Bottle', ml: 500 },
+                { id: 'w3', label: 'Large', ml: 750 },
+                { id: 'w4', label: '1L Jug', ml: 1000 }
+            ];
+
+            const DEFAULT_RULES_CONFIG = [
+                { id: 'protein', title: 'Hit 140g–165g Protein', desc: 'Preserves lean muscle & controls hunger at 77kg.' },
+                { id: 'calories', title: 'Stay in 1,950–2,050 kcal', desc: '~450 kcal daily deficit for steady fat loss.' },
+                { id: 'liquidCalories', title: 'Zero Liquid Calories', desc: 'No sugary drinks, bubble tea, juices, or alcohol.' },
+                { id: 'lowSodium', title: 'Low Sodium & Clean Sauces', desc: 'Avoid fast food & heavy sauces to prevent cheek puffiness.' },
+                { id: 'water', title: 'Drink 2.7L–3.0L Water', desc: 'Flushes sodium & tightens facial water retention.' },
+                { id: 'steps', title: 'Hit 8,000–10,000 Steps', desc: 'Daily low-stress fat burn.' },
+                { id: 'workout', title: 'Workout / Planned Rest Day', desc: 'Strength training or intentional recovery day.' },
+                { id: 'sleep', title: 'Sleep 7+ Hours', desc: 'Keeps cortisol & morning water retention low.' }
+            ];
+
+            function toISODate(dt) {
+                const y = dt.getFullYear();
+                const m = String(dt.getMonth() + 1).padStart(2, '0');
+                const d = String(dt.getDate()).padStart(2, '0');
+                return `${y}-${m}-${d}`;
             }
-            const base = createEmptyDay();
-            const existing = store.days[dateStr];
-            return {
-                ...base,
-                ...existing,
-                rules: { ...base.rules, ...(existing.rules || {}) },
-                meals: Array.isArray(existing.meals) ? existing.meals : []
-            };
-        }
 
-        function ensureDayData(dateStr) {
-            if (!store.days[dateStr]) {
-                store.days[dateStr] = createEmptyDay();
+            function parseISODate(isoStr) {
+                const [y, m, d] = isoStr.split('-').map(Number);
+                return new Date(y, m - 1, d);
             }
-            return store.days[dateStr];
-        }
 
-        function loadStore() {
-            try {
-                const raw = localStorage.getItem(STORAGE_KEY);
-                if (raw) {
-                    const parsed = JSON.parse(raw);
-                    if (parsed && typeof parsed.days === 'object') {
-                        if (!Array.isArray(parsed.waterPresets) || parsed.waterPresets.length === 0) {
-                            parsed.waterPresets = [...DEFAULT_WATER_PRESETS];
+            // --- APP STATE ---
+            const todayStr = toISODate(new Date());
+            let currentMonthDate = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+            let selectedDate = null;
+            let isEditingWaterPresets = false;
+            let store = loadStore();
+
+            function getActiveRules() {
+                return Array.isArray(store.customRules) && store.customRules.length > 0
+                    ? store.customRules
+                    : DEFAULT_RULES_CONFIG;
+            }
+
+            function createEmptyDay() {
+                const rules = {};
+                getActiveRules().forEach((r) => {
+                    rules[r.id] = null;
+                });
+                return {
+                    rules,
+                    waterMl: 0,
+                    steps: 0,
+                    meals: [],
+                    workouts: [],
+                    sharpness: null,
+                    fit: '',
+                    selfie: false,
+                    note: ''
+                };
+            }
+
+            function getDayData(dateStr) {
+                if (!store.days[dateStr]) {
+                    return createEmptyDay();
+                }
+                const base = createEmptyDay();
+                const existing = store.days[dateStr];
+                return {
+                    ...base,
+                    ...existing,
+                    rules: { ...base.rules, ...(existing.rules || {}) },
+                    meals: Array.isArray(existing.meals) ? existing.meals : [],
+                    workouts: Array.isArray(existing.workouts) ? existing.workouts : []
+                };
+            }
+
+            function ensureDayData(dateStr) {
+                if (!store.days[dateStr]) {
+                    store.days[dateStr] = createEmptyDay();
+                }
+                if (!Array.isArray(store.days[dateStr].workouts)) {
+                    store.days[dateStr].workouts = [];
+                }
+                if (!Array.isArray(store.days[dateStr].meals)) {
+                    store.days[dateStr].meals = [];
+                }
+                return store.days[dateStr];
+            }
+
+            function loadStore() {
+                try {
+                    const raw = localStorage.getItem(STORAGE_KEY);
+                    if (raw) {
+                        const parsed = JSON.parse(raw);
+                        if (parsed && typeof parsed.days === 'object') {
+                            if (!Array.isArray(parsed.waterPresets) || parsed.waterPresets.length === 0) {
+                                parsed.waterPresets = [...DEFAULT_WATER_PRESETS];
+                            }
+                            if (!Array.isArray(parsed.customRules) || parsed.customRules.length === 0) {
+                                parsed.customRules = [...DEFAULT_RULES_CONFIG];
+                            }
+                            if (typeof parsed.deductBurn !== 'boolean') {
+                                parsed.deductBurn = true;
+                            }
+                            return parsed;
                         }
-                        if (!Array.isArray(parsed.customRules) || parsed.customRules.length === 0) {
-                            parsed.customRules = [...DEFAULT_RULES_CONFIG];
-                        }
-                        return parsed;
+                    }
+                    const rawV2 = localStorage.getItem('jawline_cut_tracker_v2');
+                    if (rawV2) {
+                        const v2 = JSON.parse(rawV2);
+                        const migratedDay = {
+                            rules: {},
+                            waterMl: v2.waterMl || 0,
+                            steps: v2.steps || 0,
+                            meals: Array.isArray(v2.meals) ? v2.meals : [],
+                            workouts: [],
+                            sharpness: null,
+                            fit: '',
+                            selfie: false,
+                            note: ''
+                        };
+                        DEFAULT_RULES_CONFIG.forEach((r) => {
+                            migratedDay.rules[r.id] = (v2.rules && v2.rules[r.id]) ? 'done' : null;
+                        });
+                        return {
+                            days: { [todayStr]: migratedDay },
+                            waterPresets: [...DEFAULT_WATER_PRESETS],
+                            customRules: [...DEFAULT_RULES_CONFIG],
+                            deductBurn: true
+                        };
+                    }
+                } catch (e) {
+                    console.error('Failed to load store:', e);
+                }
+                return {
+                    days: {},
+                    waterPresets: [...DEFAULT_WATER_PRESETS],
+                    customRules: [...DEFAULT_RULES_CONFIG],
+                    deductBurn: true
+                };
+            }
+
+            function saveStore() {
+                try {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(store));
+                } catch (e) {
+                    console.error('Failed to save store:', e);
+                }
+            }
+
+            // --- MODAL OPEN / CLOSE & DAY MUTATIONS ---
+            function openDayModal(isoDate) {
+                selectedDate = isoDate;
+                const modal = document.getElementById('day-modal');
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                renderAll();
+            }
+
+            function closeDayModal() {
+                selectedDate = null;
+                const modal = document.getElementById('day-modal');
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                renderCalendar();
+            }
+
+            function shiftSelectedDate(deltaDays) {
+                if (!selectedDate) return;
+                const dt = parseISODate(selectedDate);
+                dt.setDate(dt.getDate() + deltaDays);
+                selectedDate = toISODate(dt);
+                currentMonthDate = new Date(dt.getFullYear(), dt.getMonth(), 1);
+                renderAll();
+            }
+
+            function setRuleStatus(ruleId, targetStatus) {
+                if (!selectedDate) return;
+                const day = ensureDayData(selectedDate);
+                day.rules[ruleId] = (day.rules[ruleId] === targetStatus) ? null : targetStatus;
+                saveStore();
+                renderAll();
+            }
+
+            function adjustWater(deltaMl) {
+                if (!selectedDate) return;
+                const day = ensureDayData(selectedDate);
+                day.waterMl = Math.max(0, day.waterMl + deltaMl);
+                if (day.waterMl >= 2700 && day.rules.water !== 'done') {
+                    day.rules.water = 'done';
+                    showToast('2.7L+ water hit — marked Done!', 'cyan');
+                }
+                saveStore();
+                renderAll();
+            }
+
+            function removeWaterPreset(presetId) {
+                store.waterPresets = store.waterPresets.filter((p) => p.id !== presetId);
+                saveStore();
+                renderWaterPresets();
+            }
+
+            function adjustSteps(deltaSteps) {
+                if (!selectedDate) return;
+                const day = ensureDayData(selectedDate);
+                day.steps = Math.max(0, day.steps + deltaSteps);
+                if (day.steps >= TARGET_STEPS && day.rules.steps !== 'done') {
+                    day.rules.steps = 'done';
+                    showToast('8,000+ steps hit — marked Done!', 'emerald');
+                }
+                saveStore();
+                renderAll();
+            }
+
+            function setExactSteps(exactSteps) {
+                if (!selectedDate) return;
+                const day = ensureDayData(selectedDate);
+                day.steps = Math.max(0, exactSteps);
+                if (day.steps >= TARGET_STEPS && day.rules.steps !== 'done') {
+                    day.rules.steps = 'done';
+                    showToast(`${exactSteps.toLocaleString()} steps logged — marked Done!`, 'emerald');
+                }
+                saveStore();
+                renderAll();
+            }
+
+            function evaluateNutritionRules(day, notify = true) {
+                const eatenCals = day.meals.reduce((s, m) => s + m.calories, 0);
+                const burnedCals = (day.workouts || []).reduce((s, w) => s + w.calories, 0);
+                const totalProt = day.meals.reduce((s, m) => s + m.protein, 0);
+                const netCals = Math.max(0, eatenCals - burnedCals);
+                const effectiveCals = store.deductBurn !== false ? netCals : eatenCals;
+
+                if (totalProt >= 140 && day.rules.protein !== 'done') {
+                    day.rules.protein = 'done';
+                    if (notify) showToast('140g+ protein hit — marked Done!', 'emerald');
+                }
+
+                if (effectiveCals > 2100) {
+                    if (day.rules.calories !== 'missed') {
+                        day.rules.calories = 'missed';
+                        if (notify) showToast('Exceeded 2,100 net kcal limit — marked Missed.', 'rose');
+                    }
+                } else if (effectiveCals >= 1750 && effectiveCals <= 2100 && day.rules.calories !== 'done') {
+                    day.rules.calories = 'done';
+                    if (notify) showToast('Target calorie range hit — marked Done!', 'emerald');
+                }
+            }
+
+            function addMeal(name, calories, protein) {
+                if (!selectedDate) return;
+                const day = ensureDayData(selectedDate);
+                day.meals.unshift({
+                    id: Date.now() + Math.floor(Math.random() * 10000),
+                    name,
+                    calories: Math.max(0, calories),
+                    protein: Math.max(0, protein)
+                });
+
+                evaluateNutritionRules(day, true);
+                saveStore();
+                renderAll();
+                showToast(`Added ${name}`, 'emerald');
+            }
+
+            function deleteMeal(mealId) {
+                if (!selectedDate) return;
+                const day = ensureDayData(selectedDate);
+                day.meals = day.meals.filter((m) => m.id !== mealId);
+                evaluateNutritionRules(day, false);
+                saveStore();
+                renderAll();
+            }
+
+            function addWorkoutBurn(name, calories) {
+                if (!selectedDate) return;
+                const day = ensureDayData(selectedDate);
+                day.workouts.unshift({
+                    id: Date.now() + Math.floor(Math.random() * 10000),
+                    name,
+                    calories: Math.max(1, calories)
+                });
+
+                if (day.rules.workout !== 'done') {
+                    day.rules.workout = 'done';
+                }
+
+                evaluateNutritionRules(day, true);
+                saveStore();
+                renderAll();
+                showToast(`Deducted -${calories} kcal (${name})`, 'amber');
+            }
+
+            function deleteWorkoutBurn(workoutId) {
+                if (!selectedDate) return;
+                const day = ensureDayData(selectedDate);
+                day.workouts = day.workouts.filter((w) => w.id !== workoutId);
+                evaluateNutritionRules(day, false);
+                saveStore();
+                renderAll();
+            }
+
+            function deleteCustomRule(ruleId) {
+                if (store.customRules.length <= 1) {
+                    showToast('Keep at least 1 rule active.', 'rose');
+                    return;
+                }
+                store.customRules = store.customRules.filter((r) => r.id !== ruleId);
+                saveStore();
+                renderCustomRulesModal();
+                renderAll();
+            }
+
+            // --- RENDER FUNCTIONS ---
+            function renderCustomRulesModal() {
+                const list = document.getElementById('custom-rules-list');
+                if (!list) return;
+                list.innerHTML = getActiveRules().map((r) => `
+                    <div class="flex items-center justify-between bg-[#1E1E1E] border border-[#363638] rounded-xl px-3 py-2 text-xs">
+                        <div class="pr-2 min-w-0">
+                            <div class="font-semibold text-gray-200 truncate">${escapeHtml(r.title)}</div>
+                            <div class="text-[11px] text-gray-500 truncate">${escapeHtml(r.desc)}</div>
+                        </div>
+                        <button type="button" data-delete-rule="${escapeHtml(r.id)}" class="text-gray-500 hover:text-rose-400 p-1 transition shrink-0" title="Remove rule">✕</button>
+                    </div>
+                `).join('');
+            }
+
+            function renderWaterPresets() {
+                const container = document.getElementById('water-presets-grid');
+                if (!container) return;
+                container.innerHTML = store.waterPresets.map((p) => `
+                    <div class="inline-flex items-center rounded-lg bg-cyan-500/15 border border-cyan-500/30 overflow-hidden">
+                        <button type="button" data-water-ml="${p.ml}" class="px-2.5 py-1.5 hover:bg-cyan-500/25 text-cyan-300 text-xs font-semibold transition">
+                            +${p.ml}ml <span class="text-[10px] text-cyan-200/70">(${escapeHtml(p.label)})</span>
+                        </button>
+                        ${isEditingWaterPresets ? `
+                            <button type="button" data-remove-preset="${escapeHtml(p.id)}" class="px-1.5 py-1.5 bg-rose-500/20 hover:bg-rose-500/40 text-rose-300 text-[10px] font-bold transition" title="Remove preset">✕</button>
+                        ` : ''}
+                    </div>
+                `).join('') + `
+                    <button type="button" data-water-ml="-250" class="px-2.5 py-1.5 rounded-lg bg-[#1E1E1E] hover:bg-[#2D2D30] border border-[#363638] text-gray-400 text-xs transition">-250ml</button>
+                `;
+            }
+
+            function calculateStreak() {
+                let streak = 0;
+                const cursor = parseISODate(todayStr);
+                const totalRules = getActiveRules().length;
+                const threshold = Math.max(1, Math.ceil(totalRules * 0.75));
+
+                const todayData = getDayData(todayStr);
+                const todayDone = Object.values(todayData.rules).filter((v) => v === 'done').length;
+                if (todayDone >= threshold) {
+                    streak++;
+                }
+                cursor.setDate(cursor.getDate() - 1);
+
+                while (true) {
+                    const iso = toISODate(cursor);
+                    const d = store.days[iso];
+                    if (!d) break;
+                    const doneCount = Object.values(d.rules || {}).filter((v) => v === 'done').length;
+                    if (doneCount >= threshold) {
+                        streak++;
+                        cursor.setDate(cursor.getDate() - 1);
+                    } else {
+                        break;
                     }
                 }
-                // Migrate any v2 single-day data into today's calendar slot if available
-                const rawV2 = localStorage.getItem('jawline_cut_tracker_v2');
-                if (rawV2) {
-                    const v2 = JSON.parse(rawV2);
-                    const migratedDay = { rules: {}, waterMl: v2.waterMl || 0, steps: v2.steps || 0, meals: Array.isArray(v2.meals) ? v2.meals : [], sharpness: null, fit: '', selfie: false, note: '' };
-                    DEFAULT_RULES_CONFIG.forEach(r => {
-                        migratedDay.rules[r.id] = (v2.rules && v2.rules[r.id]) ? 'done' : null;
-                    });
-                    return { days: { [todayStr]: migratedDay }, waterPresets: [...DEFAULT_WATER_PRESETS], customRules: [...DEFAULT_RULES_CONFIG] };
+                document.getElementById('streak-count').textContent = streak;
+            }
+
+            function renderCalendar() {
+                const year = currentMonthDate.getFullYear();
+                const month = currentMonthDate.getMonth();
+                const monthName = currentMonthDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+                document.getElementById('calendar-month-year').textContent = monthName;
+
+                const firstDayOfWeek = new Date(year, month, 1).getDay();
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+                const grid = document.getElementById('calendar-grid');
+                grid.innerHTML = '';
+
+                for (let i = 0; i < firstDayOfWeek; i++) {
+                    const blank = document.createElement('div');
+                    blank.className = 'h-16 sm:h-20 rounded-xl bg-[#1E1E1E]/40 border border-transparent';
+                    grid.appendChild(blank);
                 }
-            } catch (e) {
-                console.error('Failed to load store:', e);
+
+                let loggedDaysCount = 0;
+
+                for (let dayNum = 1; dayNum <= daysInMonth; dayNum++) {
+                    const iso = `${year}-${String(month + 1).padStart(2, '0')}-${String(dayNum).padStart(2, '0')}`;
+                    const data = store.days[iso];
+                    const isSelected = iso === selectedDate;
+                    const isToday = iso === todayStr;
+
+                    let doneCount = 0;
+                    let missedCount = 0;
+                    let hasAnyActivity = false;
+
+                    if (data) {
+                        const statuses = Object.values(data.rules || {});
+                        doneCount = statuses.filter((s) => s === 'done').length;
+                        missedCount = statuses.filter((s) => s === 'missed').length;
+                        const hasWorkouts = Array.isArray(data.workouts) && data.workouts.length > 0;
+                        hasAnyActivity = doneCount > 0 || missedCount > 0 || (data.meals && data.meals.length > 0) || hasWorkouts || data.waterMl > 0 || data.steps > 0 || data.sharpness !== null || Boolean(data.note);
+                        if (hasAnyActivity) loggedDaysCount++;
+                    }
+
+                    let statusDotHtml = '';
+                    let cardBgClass = 'bg-[#1E1E1E] hover:bg-[#2D2D30] border-[#363638]';
+
+                    if (hasAnyActivity) {
+                        if (doneCount >= 6) {
+                            cardBgClass = 'bg-emerald-500/10 hover:bg-emerald-500/15 border-emerald-500/40';
+                            statusDotHtml = `<span class="text-[10px] font-bold text-emerald-400">${doneCount}/${getActiveRules().length}</span>`;
+                        } else if (missedCount >= 3 || (doneCount === 0 && missedCount > 0)) {
+                            cardBgClass = 'bg-rose-500/10 hover:bg-rose-500/15 border-rose-500/40';
+                            statusDotHtml = `<span class="text-[10px] font-bold text-rose-400">${missedCount} ✕</span>`;
+                        } else if (doneCount > 0 || missedCount > 0) {
+                            cardBgClass = 'bg-amber-500/10 hover:bg-amber-500/15 border-amber-500/40';
+                            statusDotHtml = `<span class="text-[10px] font-bold text-amber-300">${doneCount}/${getActiveRules().length}</span>`;
+                        } else {
+                            statusDotHtml = `<span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>`;
+                        }
+                    }
+
+                    const selectedRing = isSelected ? 'ring-2 ring-cyan-400 border-cyan-400' : '';
+                    const todayBadge = isToday ? '<span class="w-1.5 h-1.5 rounded-full bg-cyan-400 inline-block ml-1" title="Today"></span>' : '';
+
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = `h-16 sm:h-20 rounded-xl border p-2 flex flex-col justify-between items-start text-left transition ${cardBgClass} ${selectedRing}`;
+                    btn.innerHTML = `
+                        <div class="w-full flex items-center justify-between">
+                            <span class="text-xs sm:text-sm font-semibold ${isToday ? 'text-cyan-300' : 'text-gray-200'}">${dayNum}${todayBadge}</span>
+                            ${data && data.selfie ? '<span class="text-[10px]" title="Selfie logged">📸</span>' : ''}
+                        </div>
+                        <div class="w-full flex items-center justify-between">
+                            ${statusDotHtml}
+                            ${missedCount > 0 && doneCount >= 6 ? `<span class="text-[9px] text-rose-400 font-semibold">${missedCount}✕</span>` : ''}
+                        </div>
+                    `;
+                    btn.addEventListener('click', () => openDayModal(iso));
+                    grid.appendChild(btn);
+                }
+
+                document.getElementById('month-summary-text').textContent = `${loggedDaysCount} day${loggedDaysCount === 1 ? '' : 's'} logged in ${currentMonthDate.toLocaleDateString('en-US', { month: 'long' })} · Click any date to log`;
             }
-            return { days: {}, waterPresets: [...DEFAULT_WATER_PRESETS], customRules: [...DEFAULT_RULES_CONFIG] };
-        }
 
-        function saveStore() {
-            try {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(store));
-            } catch (e) {
-                console.error('Failed to save store:', e);
+            function renderMonthlyStats() {
+                const year = currentMonthDate.getFullYear();
+                const month = currentMonthDate.getMonth();
+                const prefix = `${year}-${String(month + 1).padStart(2, '0')}-`;
+
+                let winningDays = 0;
+                let totalMissedRules = 0;
+                let sharpnessSum = 0;
+                let sharpnessCount = 0;
+
+                Object.entries(store.days).forEach(([iso, day]) => {
+                    if (!iso.startsWith(prefix) || !day) return;
+                    const statuses = Object.values(day.rules || {});
+                    const done = statuses.filter((s) => s === 'done').length;
+                    const missed = statuses.filter((s) => s === 'missed').length;
+                    if (done >= 6) winningDays++;
+                    totalMissedRules += missed;
+                    if (typeof day.sharpness === 'number') {
+                        sharpnessSum += day.sharpness;
+                        sharpnessCount++;
+                    }
+                });
+
+                document.getElementById('stat-winning-days').textContent = winningDays;
+                document.getElementById('stat-missed-rules').textContent = totalMissedRules;
+                document.getElementById('stat-avg-sharpness').textContent = sharpnessCount > 0 ? `${(sharpnessSum / sharpnessCount).toFixed(1)}/5` : '—';
             }
-        }
 
-        // --- INITIALIZATION ---
-        document.addEventListener('DOMContentLoaded', () => {
-            setupListeners();
-            renderAll();
-        });
+            function renderDayPanel() {
+                if (!selectedDate) return;
+                const day = getDayData(selectedDate);
+                const dt = parseISODate(selectedDate);
 
-        function setupListeners() {
-            // Month navigation
+                // Header Info
+                document.getElementById('selected-date-title').textContent = dt.toLocaleDateString('en-US', {
+                    weekday: 'long', month: 'short', day: 'numeric', year: 'numeric'
+                });
+                document.getElementById('selected-date-iso').textContent = selectedDate;
+
+                const badge = document.getElementById('selected-date-badge');
+                if (selectedDate === todayStr) {
+                    badge.textContent = 'TODAY';
+                    badge.className = 'px-2 py-0.5 rounded-md text-[11px] font-bold bg-cyan-500/15 text-cyan-300 border border-cyan-500/30';
+                } else if (selectedDate < todayStr) {
+                    badge.textContent = 'PAST LOG';
+                    badge.className = 'px-2 py-0.5 rounded-md text-[11px] font-bold bg-gray-500/15 text-gray-300 border border-gray-500/30';
+                } else {
+                    badge.textContent = 'UPCOMING';
+                    badge.className = 'px-2 py-0.5 rounded-md text-[11px] font-bold bg-amber-500/15 text-amber-300 border border-amber-500/30';
+                }
+
+                // Score Counts
+                const activeRules = getActiveRules();
+                const totalRules = activeRules.length;
+                const statuses = activeRules.map((r) => day.rules[r.id]);
+                const doneCount = statuses.filter((s) => s === 'done').length;
+                const missedCount = statuses.filter((s) => s === 'missed').length;
+                const pendingCount = Math.max(0, totalRules - doneCount - missedCount);
+                const donePct = totalRules > 0 ? Math.round((doneCount / totalRules) * 100) : 0;
+                const missedPct = totalRules > 0 ? Math.round((missedCount / totalRules) * 100) : 0;
+
+                document.getElementById('day-done-count').textContent = doneCount;
+                document.getElementById('day-missed-count').textContent = missedCount;
+                document.getElementById('day-pending-count').textContent = pendingCount;
+                document.getElementById('day-score-pct').textContent = `${donePct}% Achieved`;
+                document.getElementById('bar-done').style.width = `${donePct}%`;
+                document.getElementById('bar-missed').style.width = `${missedPct}%`;
+
+                // Render Rules with Done / Missed buttons
+                const rulesContainer = document.getElementById('rules-container');
+                rulesContainer.innerHTML = activeRules.map((rule) => {
+                    const status = day.rules[rule.id];
+
+                    let rowStyle = 'bg-[#1E1E1E] border-[#363638]';
+                    let titleStyle = 'text-gray-100';
+                    if (status === 'done') {
+                        rowStyle = 'bg-emerald-500/10 border-emerald-500/40';
+                        titleStyle = 'text-emerald-200';
+                    } else if (status === 'missed') {
+                        rowStyle = 'bg-rose-500/10 border-rose-500/40';
+                        titleStyle = 'text-rose-200';
+                    }
+
+                    const doneBtnStyle = status === 'done'
+                        ? 'bg-emerald-500 text-[#1E1E1E] border-emerald-400 font-bold shadow-sm'
+                        : 'bg-[#252526] hover:bg-emerald-500/20 text-gray-400 hover:text-emerald-300 border-[#363638]';
+
+                    const missedBtnStyle = status === 'missed'
+                        ? 'bg-rose-500 text-white border-rose-400 font-bold shadow-sm'
+                        : 'bg-[#252526] hover:bg-rose-500/20 text-gray-400 hover:text-rose-300 border-[#363638]';
+
+                    return `
+                        <div class="flex items-center justify-between gap-3 p-3 rounded-xl border transition ${rowStyle}">
+                            <div class="min-w-0 flex-1">
+                                <div class="text-xs sm:text-sm font-semibold ${titleStyle}">${escapeHtml(rule.title)}</div>
+                                <div class="text-[11px] text-gray-400 truncate">${escapeHtml(rule.desc)}</div>
+                            </div>
+                            <div class="flex items-center gap-1.5 shrink-0">
+                                <button type="button" data-rule-id="${escapeHtml(rule.id)}" data-rule-status="done" class="status-btn px-2.5 py-1.5 rounded-lg border text-xs flex items-center gap-1 ${doneBtnStyle}" title="Mark as Achieved">
+                                    <span>✓</span>
+                                    <span class="hidden sm:inline">Done</span>
+                                </button>
+                                <button type="button" data-rule-id="${escapeHtml(rule.id)}" data-rule-status="missed" class="status-btn px-2.5 py-1.5 rounded-lg border text-xs flex items-center gap-1 ${missedBtnStyle}" title="Mark as Not Achieved / Missed">
+                                    <span>✕</span>
+                                    <span class="hidden sm:inline">Missed</span>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                // Hydration & Steps
+                document.getElementById('water-display').textContent = (day.waterMl / 1000).toFixed(2);
+                document.getElementById('water-bar').style.width = `${Math.min(100, Math.round((day.waterMl / TARGET_WATER_ML) * 100))}%`;
+                renderWaterPresets();
+
+                document.getElementById('steps-display').textContent = `${day.steps.toLocaleString()} / 8,000`;
+                const stepsInput = document.getElementById('steps-input');
+                if (document.activeElement !== stepsInput) {
+                    stepsInput.value = day.steps > 0 ? day.steps : '';
+                }
+
+                // Visual & Jawline Check-in
+                document.getElementById('sharpness-hint').textContent = day.sharpness ? SHARPNESS_TEXT[day.sharpness] : 'Not rated';
+                document.querySelectorAll('.sharp-btn').forEach((btn) => {
+                    const v = parseInt(btn.getAttribute('data-val'), 10);
+                    if (v === day.sharpness) {
+                        btn.className = 'sharp-btn py-1.5 rounded-lg bg-cyan-500/25 border border-cyan-400 text-xs font-bold text-cyan-300 transition';
+                    } else {
+                        btn.className = 'sharp-btn py-1.5 rounded-lg bg-[#1E1E1E] border border-[#363638] text-xs font-bold text-gray-400 hover:border-gray-500 transition';
+                    }
+                });
+
+                document.getElementById('day-fit-select').value = day.fit || '';
+                document.getElementById('day-selfie-check').checked = Boolean(day.selfie);
+                const noteInput = document.getElementById('day-note-input');
+                if (document.activeElement !== noteInput) {
+                    noteInput.value = day.note || '';
+                }
+
+                // Meals, Workout Burn & Macros
+                const eatenCals = day.meals.reduce((s, m) => s + m.calories, 0);
+                const burnedCals = (day.workouts || []).reduce((s, w) => s + w.calories, 0);
+                const netCals = Math.max(0, eatenCals - burnedCals);
+                const effectiveCals = store.deductBurn !== false ? netCals : eatenCals;
+                const totalProt = day.meals.reduce((s, m) => s + m.protein, 0);
+
+                document.getElementById('deduct-burn-checkbox').checked = store.deductBurn !== false;
+                document.getElementById('macro-eaten-summary').textContent = `${eatenCals.toLocaleString()} kcal`;
+                document.getElementById('macro-burned-summary').textContent = `-${burnedCals.toLocaleString()} kcal`;
+
+                const netSummaryEl = document.getElementById('macro-cals-summary');
+                netSummaryEl.textContent = `${effectiveCals.toLocaleString()} / ${TARGET_CALORIES.toLocaleString()}`;
+                netSummaryEl.className = effectiveCals > 2100
+                    ? 'text-xs sm:text-sm font-bold text-rose-400'
+                    : 'text-xs sm:text-sm font-bold text-cyan-400';
+
+                document.getElementById('macro-prot-summary').textContent = `${totalProt} / ${TARGET_PROTEIN}g`;
+
+                const mealsList = document.getElementById('meals-list');
+                if (day.meals.length === 0) {
+                    mealsList.innerHTML = `<p class="text-[11px] text-gray-500 italic text-center py-3">No meals logged for ${selectedDate}.</p>`;
+                } else {
+                    mealsList.innerHTML = day.meals.map((meal) => `
+                        <div class="flex items-center justify-between bg-[#252526] border border-[#363638] rounded-lg px-2.5 py-1.5 text-xs">
+                            <div class="truncate pr-2">
+                                <span class="font-medium text-gray-200">${escapeHtml(meal.name)}</span>
+                                <span class="text-gray-400 ml-1.5">${meal.calories} kcal · <span class="text-emerald-400 font-medium">${meal.protein}g P</span></span>
+                            </div>
+                            <button type="button" data-delete-meal="${meal.id}" class="text-gray-500 hover:text-rose-400 p-1 transition shrink-0" title="Remove meal">
+                                ✕
+                            </button>
+                        </div>
+                    `).join('');
+                }
+
+                const workoutsList = document.getElementById('workouts-list');
+                if (!day.workouts || day.workouts.length === 0) {
+                    workoutsList.innerHTML = `<p class="text-[11px] text-gray-500 italic text-center py-3">No workout calories deducted yet.</p>`;
+                } else {
+                    workoutsList.innerHTML = day.workouts.map((w) => `
+                        <div class="flex items-center justify-between bg-[#252526] border border-amber-500/25 rounded-lg px-2.5 py-1.5 text-xs">
+                            <div class="truncate pr-2">
+                                <span class="font-medium text-gray-200">${escapeHtml(w.name)}</span>
+                                <span class="text-amber-400 font-semibold ml-1.5">-${w.calories} kcal</span>
+                            </div>
+                            <button type="button" data-delete-workout="${w.id}" class="text-gray-500 hover:text-rose-400 p-1 transition shrink-0" title="Remove workout burn">
+                                ✕
+                            </button>
+                        </div>
+                    `).join('');
+                }
+            }
+
+            function renderAll() {
+                renderCalendar();
+                renderMonthlyStats();
+                if (selectedDate) {
+                    renderDayPanel();
+                }
+                calculateStreak();
+            }
+
+            // --- UTILITIES ---
+            function escapeHtml(str) {
+                const div = document.createElement('div');
+                div.textContent = String(str);
+                return div.innerHTML;
+            }
+
+            function showToast(message, color = 'emerald') {
+                const container = document.getElementById('toast-container');
+                const toast = document.createElement('div');
+                const borderClass = color === 'cyan' ? 'border-cyan-500/40 text-cyan-200' :
+                                    color === 'amber' ? 'border-amber-500/40 text-amber-200' :
+                                    color === 'rose' ? 'border-rose-500/40 text-rose-200' :
+                                    'border-emerald-500/40 text-emerald-200';
+                toast.className = `bg-[#252526] border ${borderClass} px-4 py-2.5 rounded-xl shadow-xl text-xs font-medium transition-all duration-300 transform translate-y-2 opacity-0`;
+                toast.textContent = message;
+                container.appendChild(toast);
+
+                requestAnimationFrame(() => toast.classList.remove('translate-y-2', 'opacity-0'));
+                setTimeout(() => {
+                    toast.classList.add('translate-y-2', 'opacity-0');
+                    setTimeout(() => toast.remove(), 300);
+                }, 2600);
+            }
+
+            // --- EVENT LISTENERS ---
             document.getElementById('btn-prev-month').addEventListener('click', () => {
                 currentMonthDate = new Date(currentMonthDate.getFullYear(), currentMonthDate.getMonth() - 1, 1);
                 renderCalendar();
@@ -632,7 +1246,6 @@
                 renderMonthlyStats();
             });
 
-            // Open Today's Log
             document.getElementById('btn-jump-today').addEventListener('click', () => {
                 const now = new Date();
                 currentMonthDate = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -665,12 +1278,26 @@
                 renderAll();
                 showToast('New daily rule added!', 'emerald');
             });
+            document.getElementById('custom-rules-list').addEventListener('click', (e) => {
+                const btn = e.target.closest('[data-delete-rule]');
+                if (btn) deleteCustomRule(btn.dataset.deleteRule);
+            });
+
+            // Rules Done/Missed Event Delegation
+            document.getElementById('rules-container').addEventListener('click', (e) => {
+                const btn = e.target.closest('[data-rule-id]');
+                if (btn) {
+                    setRuleStatus(btn.dataset.ruleId, btn.dataset.ruleStatus);
+                }
+            });
 
             // Mark All Done button
             document.getElementById('btn-mark-all-done').addEventListener('click', () => {
                 if (!selectedDate) return;
                 const day = ensureDayData(selectedDate);
-                getActiveRules().forEach(r => { day.rules[r.id] = 'done'; });
+                getActiveRules().forEach((r) => {
+                    day.rules[r.id] = 'done';
+                });
                 saveStore();
                 renderAll();
                 showToast('All rules marked Done for this day!', 'emerald');
@@ -693,6 +1320,7 @@
                     id: Date.now() + idx
                 }));
                 day.meals = [...copied, ...day.meals];
+                evaluateNutritionRules(day, true);
                 saveStore();
                 renderAll();
                 showToast(`Copied ${copied.length} meals from ${prevIso}!`, 'cyan');
@@ -715,7 +1343,7 @@
             // Clear Date Modal
             const confirmModal = document.getElementById('confirm-modal');
             document.getElementById('btn-clear-date').addEventListener('click', () => {
-                document.getElementById('confirm-modal-desc').textContent = `Clear all logged rules, meals, water, and notes for ${selectedDate}?`;
+                document.getElementById('confirm-modal-desc').textContent = `Clear all logged rules, meals, workouts, water, and notes for ${selectedDate}?`;
                 confirmModal.classList.remove('hidden');
                 confirmModal.classList.add('flex');
             });
@@ -733,7 +1361,19 @@
                 showToast(`Cleared log for ${selectedDate}`, 'rose');
             });
 
-            // Custom Water Preset Toggle & Creation
+            // Water Presets Event Delegation & Editor
+            document.getElementById('water-presets-grid').addEventListener('click', (e) => {
+                const removeBtn = e.target.closest('[data-remove-preset]');
+                if (removeBtn) {
+                    removeWaterPreset(removeBtn.dataset.removePreset);
+                    return;
+                }
+                const addBtn = e.target.closest('[data-water-ml]');
+                if (addBtn) {
+                    adjustWater(parseInt(addBtn.dataset.waterMl, 10));
+                }
+            });
+
             document.getElementById('btn-toggle-water-presets').addEventListener('click', () => {
                 isEditingWaterPresets = !isEditingWaterPresets;
                 const editor = document.getElementById('water-preset-editor');
@@ -760,7 +1400,6 @@
                 showToast(`Added +${ml}ml (${label}) preset!`, 'cyan');
             });
 
-            // Custom Direct Water Input
             document.getElementById('btn-add-custom-water').addEventListener('click', () => {
                 const input = document.getElementById('custom-water-input');
                 const ml = parseInt(input.value, 10);
@@ -772,7 +1411,13 @@
                 input.value = '';
             });
 
-            // Steps input
+            // Steps Quick Buttons & Direct Input
+            document.querySelectorAll('[data-step-delta]').forEach((btn) => {
+                btn.addEventListener('click', () => adjustSteps(parseInt(btn.dataset.stepDelta, 10)));
+            });
+            document.querySelectorAll('[data-step-exact]').forEach((btn) => {
+                btn.addEventListener('click', () => setExactSteps(parseInt(btn.dataset.stepExact, 10)));
+            });
             document.getElementById('steps-input').addEventListener('input', (e) => {
                 if (!selectedDate) return;
                 const day = ensureDayData(selectedDate);
@@ -786,12 +1431,12 @@
             });
 
             // Sharpness 1-5 rating buttons
-            document.querySelectorAll('.sharp-btn').forEach(btn => {
+            document.querySelectorAll('.sharp-btn').forEach((btn) => {
                 btn.addEventListener('click', () => {
                     if (!selectedDate) return;
                     const val = parseInt(btn.getAttribute('data-val'), 10);
                     const day = ensureDayData(selectedDate);
-                    day.sharpness = day.sharpness === val ? null : val; // tap again to unset
+                    day.sharpness = day.sharpness === val ? null : val;
                     saveStore();
                     renderDayPanel();
                     renderMonthlyStats();
@@ -822,7 +1467,7 @@
                 renderCalendar();
             });
 
-            // Meal form
+            // Meal Form & Staples
             document.getElementById('meal-form').addEventListener('submit', (e) => {
                 e.preventDefault();
                 const nameEl = document.getElementById('meal-name');
@@ -839,6 +1484,63 @@
                     calsEl.value = '';
                     protEl.value = '';
                 }
+            });
+
+            document.querySelectorAll('.staple-btn').forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    addMeal(
+                        btn.dataset.stapleName,
+                        parseInt(btn.dataset.stapleCals, 10),
+                        parseInt(btn.dataset.stapleProt, 10)
+                    );
+                });
+            });
+
+            document.getElementById('meals-list').addEventListener('click', (e) => {
+                const btn = e.target.closest('[data-delete-meal]');
+                if (btn) deleteMeal(Number(btn.dataset.deleteMeal));
+            });
+
+            // Deduct Burn From Budget Checkbox
+            document.getElementById('deduct-burn-checkbox').addEventListener('change', (e) => {
+                store.deductBurn = e.target.checked;
+                if (selectedDate) {
+                    evaluateNutritionRules(ensureDayData(selectedDate), false);
+                }
+                saveStore();
+                renderAll();
+                showToast(
+                    store.deductBurn
+                        ? 'Workout burn deducted from calorie budget'
+                        : 'Tracking pure food calories (burn not deducted)',
+                    'amber'
+                );
+            });
+
+            // Workout Burn Form & Presets
+            document.getElementById('workout-burn-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const nameEl = document.getElementById('workout-name');
+                const calsEl = document.getElementById('workout-cals');
+                const name = nameEl.value.trim();
+                const cals = parseInt(calsEl.value, 10);
+
+                if (name && !isNaN(cals) && cals > 0) {
+                    addWorkoutBurn(name, cals);
+                    nameEl.value = '';
+                    calsEl.value = '';
+                }
+            });
+
+            document.querySelectorAll('.burn-preset-btn').forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    addWorkoutBurn(btn.dataset.burnName, parseInt(btn.dataset.burnCals, 10));
+                });
+            });
+
+            document.getElementById('workouts-list').addEventListener('click', (e) => {
+                const btn = e.target.closest('[data-delete-workout]');
+                if (btn) deleteWorkoutBurn(Number(btn.dataset.deleteWorkout));
             });
 
             // Backup Modal
@@ -864,7 +1566,7 @@
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = `jawline-calendar-backup-${todayStr}.json`;
+                a.download = `sculptlog-calendar-backup-${todayStr}.json`;
                 a.click();
                 URL.revokeObjectURL(url);
                 showToast('Backup file downloaded!', 'emerald');
@@ -876,6 +1578,12 @@
                     if (!Array.isArray(parsed.waterPresets)) {
                         parsed.waterPresets = [...DEFAULT_WATER_PRESETS];
                     }
+                    if (!Array.isArray(parsed.customRules) || parsed.customRules.length === 0) {
+                        parsed.customRules = [...DEFAULT_RULES_CONFIG];
+                    }
+                    if (typeof parsed.deductBurn !== 'boolean') {
+                        parsed.deductBurn = true;
+                    }
                     store = parsed;
                     saveStore();
                     renderAll();
@@ -886,477 +1594,10 @@
                     showToast('Invalid JSON backup code.', 'rose');
                 }
             });
-        }
 
-        // --- MODAL OPEN / CLOSE & DAY MUTATIONS ---
-        function openDayModal(isoDate) {
-            selectedDate = isoDate;
-            const modal = document.getElementById('day-modal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
+            // Initial render
             renderAll();
-        }
-
-        function closeDayModal() {
-            selectedDate = null;
-            const modal = document.getElementById('day-modal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-            renderCalendar();
-        }
-
-        function removeWaterPreset(presetId) {
-            store.waterPresets = store.waterPresets.filter(p => p.id !== presetId);
-            saveStore();
-            renderWaterPresets();
-        }
-
-        function renderWaterPresets() {
-            const container = document.getElementById('water-presets-grid');
-            if (!container) return;
-            container.innerHTML = store.waterPresets.map(p => `
-                <div class="inline-flex items-center rounded-lg bg-cyan-500/15 border border-cyan-500/30 overflow-hidden">
-                    <button type="button" onclick="adjustWater(${p.ml})" class="px-2.5 py-1.5 hover:bg-cyan-500/25 text-cyan-300 text-xs font-semibold transition">
-                        +${p.ml}ml <span class="text-[10px] text-cyan-200/70">(${escapeHtml(p.label)})</span>
-                    </button>
-                    ${isEditingWaterPresets ? `
-                        <button type="button" onclick="removeWaterPreset('${p.id}')" class="px-1.5 py-1.5 bg-rose-500/20 hover:bg-rose-500/40 text-rose-300 text-[10px] font-bold transition" title="Remove preset">✕</button>
-                    ` : ''}
-                </div>
-            `).join('') + `
-                <button type="button" onclick="adjustWater(-250)" class="px-2.5 py-1.5 rounded-lg bg-[#1E1E1E] hover:bg-[#2D2D30] border border-[#363638] text-gray-400 text-xs transition">-250ml</button>
-            `;
-        }
-
-        function shiftSelectedDate(deltaDays) {
-            if (!selectedDate) return;
-            const dt = parseISODate(selectedDate);
-            dt.setDate(dt.getDate() + deltaDays);
-            selectedDate = toISODate(dt);
-            currentMonthDate = new Date(dt.getFullYear(), dt.getMonth(), 1);
-            renderAll();
-        }
-
-        function setRuleStatus(ruleId, targetStatus) {
-            if (!selectedDate) return;
-            const day = ensureDayData(selectedDate);
-            // Clicking the active status toggles it back to unlogged (null)
-            day.rules[ruleId] = (day.rules[ruleId] === targetStatus) ? null : targetStatus;
-            saveStore();
-            renderAll();
-        }
-
-        function adjustWater(deltaMl) {
-            if (!selectedDate) return;
-            const day = ensureDayData(selectedDate);
-            day.waterMl = Math.max(0, day.waterMl + deltaMl);
-            if (day.waterMl >= 2700 && day.rules.water !== 'done') {
-                day.rules.water = 'done';
-                showToast('2.7L+ water hit — marked Done!', 'cyan');
-            }
-            saveStore();
-            renderAll();
-        }
-
-        function adjustSteps(deltaSteps) {
-            if (!selectedDate) return;
-            const day = ensureDayData(selectedDate);
-            day.steps = Math.max(0, day.steps + deltaSteps);
-            if (day.steps >= TARGET_STEPS && day.rules.steps !== 'done') {
-                day.rules.steps = 'done';
-                showToast('8,000+ steps hit — marked Done!', 'emerald');
-            }
-            saveStore();
-            renderAll();
-        }
-
-        function setExactSteps(exactSteps) {
-            if (!selectedDate) return;
-            const day = ensureDayData(selectedDate);
-            day.steps = Math.max(0, exactSteps);
-            if (day.steps >= TARGET_STEPS && day.rules.steps !== 'done') {
-                day.rules.steps = 'done';
-                showToast(`${exactSteps.toLocaleString()} steps logged — marked Done!`, 'emerald');
-            }
-            saveStore();
-            renderAll();
-        }
-
-        function addMeal(name, calories, protein) {
-            if (!selectedDate) return;
-            const day = ensureDayData(selectedDate);
-            day.meals.unshift({
-                id: Date.now() + Math.floor(Math.random() * 1000),
-                name,
-                calories: Math.max(0, calories),
-                protein: Math.max(0, protein)
-            });
-
-            // Auto-evaluate protein & calorie rules
-            const totalCals = day.meals.reduce((s, m) => s + m.calories, 0);
-            const totalProt = day.meals.reduce((s, m) => s + m.protein, 0);
-
-            if (totalProt >= 140 && day.rules.protein !== 'done') {
-                day.rules.protein = 'done';
-                showToast('140g+ protein hit — marked Done!', 'emerald');
-            }
-            if (totalCals > 2100) {
-                day.rules.calories = 'missed';
-                showToast('Exceeded 2,100 kcal limit — marked Missed.', 'rose');
-            } else if (totalCals >= 1750 && day.rules.calories !== 'done') {
-                day.rules.calories = 'done';
-            }
-
-            saveStore();
-            renderAll();
-            showToast(`Added ${name}`, 'emerald');
-        }
-
-        function deleteMeal(mealId) {
-            if (!selectedDate) return;
-            const day = ensureDayData(selectedDate);
-            day.meals = day.meals.filter(m => m.id !== mealId);
-            saveStore();
-            renderAll();
-        }
-
-        function deleteCustomRule(ruleId) {
-            if (store.customRules.length <= 1) {
-                showToast('Keep at least 1 rule active.', 'rose');
-                return;
-            }
-            store.customRules = store.customRules.filter(r => r.id !== ruleId);
-            saveStore();
-            renderCustomRulesModal();
-            renderAll();
-        }
-
-        function renderCustomRulesModal() {
-            const list = document.getElementById('custom-rules-list');
-            if (!list) return;
-            list.innerHTML = getActiveRules().map(r => `
-                <div class="flex items-center justify-between bg-[#1E1E1E] border border-[#363638] rounded-xl px-3 py-2 text-xs">
-                    <div class="pr-2 min-w-0">
-                        <div class="font-semibold text-gray-200 truncate">${escapeHtml(r.title)}</div>
-                        <div class="text-[11px] text-gray-500 truncate">${escapeHtml(r.desc)}</div>
-                    </div>
-                    <button type="button" onclick="deleteCustomRule('${r.id}')" class="text-gray-500 hover:text-rose-400 p-1 transition shrink-0" title="Remove rule">✕</button>
-                </div>
-            `).join('');
-        }
-
-        // --- RENDER FUNCTIONS ---
-        function renderAll() {
-            renderCalendar();
-            renderMonthlyStats();
-            if (selectedDate) {
-                renderDayPanel();
-            }
-            calculateStreak();
-        }
-
-        function calculateStreak() {
-            let streak = 0;
-            const cursor = parseISODate(todayStr);
-            const totalRules = getActiveRules().length;
-            const threshold = Math.max(1, Math.ceil(totalRules * 0.75));
-
-            // Check today first; if today isn't finished yet, start counting backward from yesterday
-            const todayData = getDayData(todayStr);
-            const todayDone = Object.values(todayData.rules).filter(v => v === 'done').length;
-            if (todayDone >= threshold) {
-                streak++;
-            }
-            cursor.setDate(cursor.getDate() - 1);
-
-            while (true) {
-                const iso = toISODate(cursor);
-                const d = store.days[iso];
-                if (!d) break;
-                const doneCount = Object.values(d.rules || {}).filter(v => v === 'done').length;
-                if (doneCount >= threshold) {
-                    streak++;
-                    cursor.setDate(cursor.getDate() - 1);
-                } else {
-                    break;
-                }
-            }
-            document.getElementById('streak-count').textContent = streak;
-        }
-
-        function renderCalendar() {
-            const year = currentMonthDate.getFullYear();
-            const month = currentMonthDate.getMonth();
-            const monthName = currentMonthDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-            document.getElementById('calendar-month-year').textContent = monthName;
-
-            const firstDayOfWeek = new Date(year, month, 1).getDay();
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-            const grid = document.getElementById('calendar-grid');
-            grid.innerHTML = '';
-
-            // Leading blank cells
-            for (let i = 0; i < firstDayOfWeek; i++) {
-                const blank = document.createElement('div');
-                blank.className = 'h-14 sm:h-16 rounded-xl bg-[#1E1E1E]/40 border border-transparent';
-                grid.appendChild(blank);
-            }
-
-            let loggedDaysCount = 0;
-
-            for (let dayNum = 1; dayNum <= daysInMonth; dayNum++) {
-                const iso = `${year}-${String(month + 1).padStart(2, '0')}-${String(dayNum).padStart(2, '0')}`;
-                const data = store.days[iso];
-                const isSelected = iso === selectedDate;
-                const isToday = iso === todayStr;
-
-                let doneCount = 0;
-                let missedCount = 0;
-                let hasAnyActivity = false;
-
-                if (data) {
-                    const statuses = Object.values(data.rules || {});
-                    doneCount = statuses.filter(s => s === 'done').length;
-                    missedCount = statuses.filter(s => s === 'missed').length;
-                    hasAnyActivity = doneCount > 0 || missedCount > 0 || data.meals.length > 0 || data.waterMl > 0 || data.steps > 0 || data.sharpness !== null || Boolean(data.note);
-                    if (hasAnyActivity) loggedDaysCount++;
-                }
-
-                // Determine cell color accent based on performance
-                let statusDotHtml = '';
-                let cardBgClass = 'bg-[#1E1E1E] hover:bg-[#2D2D30] border-[#363638]';
-
-                if (hasAnyActivity) {
-                    if (doneCount >= 6) {
-                        cardBgClass = 'bg-emerald-500/10 hover:bg-emerald-500/15 border-emerald-500/40';
-                        statusDotHtml = `<span class="text-[10px] font-bold text-emerald-400">${doneCount}/8</span>`;
-                    } else if (missedCount >= 3 || (doneCount === 0 && missedCount > 0)) {
-                        cardBgClass = 'bg-rose-500/10 hover:bg-rose-500/15 border-rose-500/40';
-                        statusDotHtml = `<span class="text-[10px] font-bold text-rose-400">${missedCount} ✕</span>`;
-                    } else if (doneCount > 0 || missedCount > 0) {
-                        cardBgClass = 'bg-amber-500/10 hover:bg-amber-500/15 border-amber-500/40';
-                        statusDotHtml = `<span class="text-[10px] font-bold text-amber-300">${doneCount}/8</span>`;
-                    } else {
-                        statusDotHtml = `<span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>`;
-                    }
-                }
-
-                const selectedRing = isSelected ? 'ring-2 ring-cyan-400 border-cyan-400' : '';
-                const todayBadge = isToday ? '<span class="w-1.5 h-1.5 rounded-full bg-cyan-400 inline-block ml-1" title="Today"></span>' : '';
-
-                const btn = document.createElement('button');
-                btn.type = 'button';
-                btn.className = `h-16 sm:h-20 rounded-xl border p-2 flex flex-col justify-between items-start text-left transition ${cardBgClass} ${selectedRing}`;
-                btn.innerHTML = `
-                    <div class="w-full flex items-center justify-between">
-                        <span class="text-xs sm:text-sm font-semibold ${isToday ? 'text-cyan-300' : 'text-gray-200'}">${dayNum}${todayBadge}</span>
-                        ${data && data.selfie ? '<span class="text-[10px]" title="Selfie logged">📸</span>' : ''}
-                    </div>
-                    <div class="w-full flex items-center justify-between">
-                        ${statusDotHtml}
-                        ${missedCount > 0 && doneCount >= 6 ? `<span class="text-[9px] text-rose-400 font-semibold">${missedCount}✕</span>` : ''}
-                    </div>
-                `;
-                btn.addEventListener('click', () => {
-                    openDayModal(iso);
-                });
-
-                grid.appendChild(btn);
-            }
-
-            document.getElementById('month-summary-text').textContent = `${loggedDaysCount} day${loggedDaysCount === 1 ? '' : 's'} logged in ${currentMonthDate.toLocaleDateString('en-US', { month: 'long' })} · Click any date to log`;
-        }
-
-        function renderMonthlyStats() {
-            const year = currentMonthDate.getFullYear();
-            const month = currentMonthDate.getMonth();
-            const prefix = `${year}-${String(month + 1).padStart(2, '0')}-`;
-
-            let winningDays = 0;
-            let totalMissedRules = 0;
-            let sharpnessSum = 0;
-            let sharpnessCount = 0;
-
-            Object.entries(store.days).forEach(([iso, day]) => {
-                if (!iso.startsWith(prefix) || !day) return;
-                const statuses = Object.values(day.rules || {});
-                const done = statuses.filter(s => s === 'done').length;
-                const missed = statuses.filter(s => s === 'missed').length;
-                if (done >= 6) winningDays++;
-                totalMissedRules += missed;
-                if (typeof day.sharpness === 'number') {
-                    sharpnessSum += day.sharpness;
-                    sharpnessCount++;
-                }
-            });
-
-            document.getElementById('stat-winning-days').textContent = winningDays;
-            document.getElementById('stat-missed-rules').textContent = totalMissedRules;
-            document.getElementById('stat-avg-sharpness').textContent = sharpnessCount > 0 ? `${(sharpnessSum / sharpnessCount).toFixed(1)}/5` : '—';
-        }
-
-        function renderDayPanel() {
-            if (!selectedDate) return;
-            const day = getDayData(selectedDate);
-            const dt = parseISODate(selectedDate);
-
-            // Header Info
-            document.getElementById('selected-date-title').textContent = dt.toLocaleDateString('en-US', {
-                weekday: 'long', month: 'short', day: 'numeric', year: 'numeric'
-            });
-            document.getElementById('selected-date-iso').textContent = selectedDate;
-
-            const badge = document.getElementById('selected-date-badge');
-            if (selectedDate === todayStr) {
-                badge.textContent = 'TODAY';
-                badge.className = 'px-2 py-0.5 rounded-md text-[11px] font-bold bg-cyan-500/15 text-cyan-300 border border-cyan-500/30';
-            } else if (selectedDate < todayStr) {
-                badge.textContent = 'PAST LOG';
-                badge.className = 'px-2 py-0.5 rounded-md text-[11px] font-bold bg-gray-500/15 text-gray-300 border border-gray-500/30';
-            } else {
-                badge.textContent = 'UPCOMING';
-                badge.className = 'px-2 py-0.5 rounded-md text-[11px] font-bold bg-amber-500/15 text-amber-300 border border-amber-500/30';
-            }
-
-            // Score Counts
-            const activeRules = getActiveRules();
-            const totalRules = activeRules.length;
-            const statuses = activeRules.map(r => day.rules[r.id]);
-            const doneCount = statuses.filter(s => s === 'done').length;
-            const missedCount = statuses.filter(s => s === 'missed').length;
-            const pendingCount = Math.max(0, totalRules - doneCount - missedCount);
-            const donePct = totalRules > 0 ? Math.round((doneCount / totalRules) * 100) : 0;
-            const missedPct = totalRules > 0 ? Math.round((missedCount / totalRules) * 100) : 0;
-
-            document.getElementById('day-done-count').textContent = doneCount;
-            document.getElementById('day-missed-count').textContent = missedCount;
-            document.getElementById('day-pending-count').textContent = pendingCount;
-            document.getElementById('day-score-pct').textContent = `${donePct}% Achieved`;
-            document.getElementById('bar-done').style.width = `${donePct}%`;
-            document.getElementById('bar-missed').style.width = `${missedPct}%`;
-
-            // Render Rules with Done / Missed buttons
-            const rulesContainer = document.getElementById('rules-container');
-            rulesContainer.innerHTML = activeRules.map(rule => {
-                const status = day.rules[rule.id]; // 'done' | 'missed' | null
-
-                let rowStyle = 'bg-[#1E1E1E] border-[#363638]';
-                let titleStyle = 'text-gray-100';
-                if (status === 'done') {
-                    rowStyle = 'bg-emerald-500/10 border-emerald-500/40';
-                    titleStyle = 'text-emerald-200';
-                } else if (status === 'missed') {
-                    rowStyle = 'bg-rose-500/10 border-rose-500/40';
-                    titleStyle = 'text-rose-200';
-                }
-
-                const doneBtnStyle = status === 'done'
-                    ? 'bg-emerald-500 text-[#1E1E1E] border-emerald-400 font-bold shadow-sm'
-                    : 'bg-[#252526] hover:bg-emerald-500/20 text-gray-400 hover:text-emerald-300 border-[#363638]';
-
-                const missedBtnStyle = status === 'missed'
-                    ? 'bg-rose-500 text-white border-rose-400 font-bold shadow-sm'
-                    : 'bg-[#252526] hover:bg-rose-500/20 text-gray-400 hover:text-rose-300 border-[#363638]';
-
-                return `
-                    <div class="flex items-center justify-between gap-3 p-3 rounded-xl border transition ${rowStyle}">
-                        <div class="min-w-0 flex-1">
-                            <div class="text-xs sm:text-sm font-semibold ${titleStyle}">${rule.title}</div>
-                            <div class="text-[11px] text-gray-400 truncate">${rule.desc}</div>
-                        </div>
-                        <div class="flex items-center gap-1.5 shrink-0">
-                            <button type="button" onclick="setRuleStatus('${rule.id}', 'done')" class="status-btn px-2.5 py-1.5 rounded-lg border text-xs flex items-center gap-1 ${doneBtnStyle}" title="Mark as Achieved">
-                                <span>✓</span>
-                                <span class="hidden sm:inline">Done</span>
-                            </button>
-                            <button type="button" onclick="setRuleStatus('${rule.id}', 'missed')" class="status-btn px-2.5 py-1.5 rounded-lg border text-xs flex items-center gap-1 ${missedBtnStyle}" title="Mark as Not Achieved / Missed">
-                                <span>✕</span>
-                                <span class="hidden sm:inline">Missed</span>
-                            </button>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-
-            // Hydration & Steps
-            document.getElementById('water-display').textContent = (day.waterMl / 1000).toFixed(2);
-            document.getElementById('water-bar').style.width = `${Math.min(100, Math.round((day.waterMl / TARGET_WATER_ML) * 100))}%`;
-            renderWaterPresets();
-
-            document.getElementById('steps-display').textContent = `${day.steps.toLocaleString()} / 8,000`;
-            const stepsInput = document.getElementById('steps-input');
-            if (document.activeElement !== stepsInput) {
-                stepsInput.value = day.steps > 0 ? day.steps : '';
-            }
-
-            // Visual & Jawline Check-in
-            document.getElementById('sharpness-hint').textContent = day.sharpness ? SHARPNESS_TEXT[day.sharpness] : 'Not rated';
-            document.querySelectorAll('.sharp-btn').forEach(btn => {
-                const v = parseInt(btn.getAttribute('data-val'), 10);
-                if (v === day.sharpness) {
-                    btn.className = 'sharp-btn py-1.5 rounded-lg bg-cyan-500/25 border border-cyan-400 text-xs font-bold text-cyan-300 transition';
-                } else {
-                    btn.className = 'sharp-btn py-1.5 rounded-lg bg-[#1E1E1E] border border-[#363638] text-xs font-bold text-gray-400 hover:border-gray-500 transition';
-                }
-            });
-
-            document.getElementById('day-fit-select').value = day.fit || '';
-            document.getElementById('day-selfie-check').checked = !!day.selfie;
-            const noteInput = document.getElementById('day-note-input');
-            if (document.activeElement !== noteInput) {
-                noteInput.value = day.note || '';
-            }
-
-            // Meals & Macros
-            const totalCals = day.meals.reduce((s, m) => s + m.calories, 0);
-            const totalProt = day.meals.reduce((s, m) => s + m.protein, 0);
-
-            document.getElementById('macro-cals-summary').textContent = `${totalCals.toLocaleString()} / ${TARGET_CALORIES.toLocaleString()} kcal`;
-            document.getElementById('macro-cals-summary').className = totalCals > 2100 ? 'font-bold text-rose-400' : 'font-bold text-cyan-400';
-            document.getElementById('macro-prot-summary').textContent = `${totalProt} / ${TARGET_PROTEIN}g protein`;
-
-            const mealsList = document.getElementById('meals-list');
-            if (day.meals.length === 0) {
-                mealsList.innerHTML = `<p class="text-xs text-gray-500 italic text-center py-3">No meals logged for ${selectedDate}.</p>`;
-            } else {
-                mealsList.innerHTML = day.meals.map(meal => `
-                    <div class="flex items-center justify-between bg-[#1E1E1E] border border-[#363638] rounded-xl px-3 py-2 text-xs">
-                        <div class="truncate pr-2">
-                            <span class="font-medium text-gray-200">${escapeHtml(meal.name)}</span>
-                            <span class="text-gray-400 ml-2">${meal.calories} kcal · <span class="text-emerald-400 font-medium">${meal.protein}g P</span></span>
-                        </div>
-                        <button type="button" onclick="deleteMeal(${meal.id})" class="text-gray-500 hover:text-rose-400 p-1 transition shrink-0" title="Remove meal">
-                            ✕
-                        </button>
-                    </div>
-                `).join('');
-            }
-        }
-
-        // --- UTILITIES ---
-        function escapeHtml(str) {
-            const div = document.createElement('div');
-            div.textContent = str;
-            return div.innerHTML;
-        }
-
-        function showToast(message, color = 'emerald') {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            const borderClass = color === 'cyan' ? 'border-cyan-500/40 text-cyan-200' :
-                                color === 'rose' ? 'border-rose-500/40 text-rose-200' :
-                                'border-emerald-500/40 text-emerald-200';
-            toast.className = `bg-[#252526] border ${borderClass} px-4 py-2.5 rounded-xl shadow-xl text-xs font-medium transition-all duration-300 transform translate-y-2 opacity-0`;
-            toast.textContent = message;
-            container.appendChild(toast);
-
-            requestAnimationFrame(() => toast.classList.remove('translate-y-2', 'opacity-0'));
-            setTimeout(() => {
-                toast.classList.add('translate-y-2', 'opacity-0');
-                setTimeout(() => toast.remove(), 300);
-            }, 2600);
-        }
+        });
     </script>
 </body>
 </html>
